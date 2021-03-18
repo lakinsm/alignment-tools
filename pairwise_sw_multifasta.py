@@ -9,12 +9,12 @@ def fasta_parse(infile):
 		# Skip whitespace
 		while True:
 			line = fasta_file.readline()
-			if line is "":
+			if line == "":
 				return  # Empty file or premature end of file?
-			if line[0] is ">":
+			if line[0] == ">":
 				break
 		while True:
-			if line[0] is not ">":
+			if line[0] != ">":
 				raise ValueError("Records in FASTA should begin with '>'")
 			header = line[1:].rstrip()
 			all_lines = []
@@ -22,7 +22,7 @@ def fasta_parse(infile):
 			while True:
 				if not line:
 					break
-				if line[0] is ">":
+				if line[0] == ">":
 					break
 				all_lines.append(line.rstrip())
 				line = fasta_file.readline()
