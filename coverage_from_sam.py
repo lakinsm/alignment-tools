@@ -225,15 +225,14 @@ def write_coverage(cov_dict, ref_len_dict, output_csv_path):
 		bases_covered = len(set(range(genome_len)).intersection(idx_dict.keys()))
 		target_info += ((bases_aligned, bases_covered, genome_len, target),)
 	sorted_targets = sorted(target_info, key=lambda x: x[0], reverse=True)
-	for data in sorted_targets:
-		for bases_aligned, bases_covered, genome_len, target in data:
-			sys.stdout.write('\nTarget: {}\nGenome Length: {}\nAverage Coverage: {}'
-			                 '\nPercent Bases Covered: {}\n'.format(
-				target,
-				genome_len,
-				float(bases_aligned) / float(genome_len),
-				100 * float(bases_covered) / float(genome_len)
-			))
+	for bases_aligned, bases_covered, genome_len, target in sorted_targets:
+		sys.stdout.write('\nTarget: {}\nGenome Length: {}\nAverage Coverage: {}'
+		                 '\nPercent Bases Covered: {}\n'.format(
+			target,
+			genome_len,
+			float(bases_aligned) / float(genome_len),
+			100 * float(bases_covered) / float(genome_len)
+		))
 	with open(output_csv_path, 'w') as out:
 		for target, idx_dict in cov_dict.items():
 			out.write('{}'.format(target))
