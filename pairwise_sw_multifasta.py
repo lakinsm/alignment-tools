@@ -34,22 +34,20 @@ def fasta_parse(infile):
 def pairwise_ssw(fasta, outfile):
 	headers = tuple(sorted(fasta.keys()))
 	with open(outfile, 'w') as out:
-		out.write('query_header,target_header,aln_score_opt,aln_score_subopt,qstart,qend,tstart,tend,tend_subopt,cigar\n')
+		out.write('query_header,target_header,aln_score,qstart,qend,tstart,tend,cigar\n')
 		for i, query_header in enumerate(headers):
 			for j in range(i, len(headers)):
 				target_header = headers[j]
 				ssw = StripedSmithWaterman(fasta[query_header])
 				res = ssw(fasta[target_header])
-				out.write('{},{},{},{},{},{},{},{},{},{}\n'.format(
+				out.write('{},{},{},{},{},{},{},{}\n'.format(
 					query_header,
 					target_header,
 					res['optimal_alignment_score'],
-					res['suboptimal_alignment_score'],
 					res['query_begin'],
 					res['query_end'],
 					res['target_begin'],
 					res['target_end_optimal'],
-					res['target_end_suboptimal'],
 					res['cigar']
 				))
 
