@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from skbio.core.ssw import align_striped_smith_waterman
+from skbio.alignment import StripedSmithWaterman
 import sys
 
 
@@ -38,7 +38,8 @@ def pairwise_ssw(fasta, outfile):
 		for i, query_header in enumerate(headers):
 			for j in range(i, len(headers)):
 				target_header = headers[j]
-				res = align_striped_smith_waterman(fasta[query_header], fasta[target_header])
+				ssw = StripedSmithWaterman(fasta[query_header])
+				res = ssw(fasta[target_header])
 				out.write('{},{},{},{},{},{},{},{},{},{}\n'.format(
 					query_header,
 					target_header,
