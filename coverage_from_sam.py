@@ -227,7 +227,7 @@ def write_coverage(cov_dict, ref_len_dict, output_csv_path):
 	sorted_targets = sorted(target_info, key=lambda x: x[0], reverse=True)
 	for bases_aligned, bases_covered, genome_len, target in sorted_targets:
 		sys.stdout.write('\nTarget: {}\nGenome Length: {}\nAverage Coverage: {}'
-		                 '\nPercent Bases Covered: {}\n'.format(
+		                 '\nPercent Bases Covered: {}\n\n'.format(
 			target,
 			genome_len,
 			float(bases_aligned) / float(genome_len),
@@ -249,6 +249,8 @@ def worker(infile):
 	sam_parser = SamParser(infile)
 	for query, q_reverse, target, t_start, cigar in sam_parser:
 		idxs = parse_cigar(cigar, t_start - 1, q_reverse)
+		if idxs[0] > 200000 or idxs[-1] > 200000:
+			print(query, q_reverse, target, t_start, cigar)
 		if target not in ref_cov:
 			ref_cov[target] = {}
 		for i in idxs:
