@@ -196,7 +196,7 @@ def plot_cov(cov_dict, target, target_len, window_size, pdf_handle):
 	"""
 	y = rolling_average([(k, v) for k, v in cov_dict[target].items()], window_size, np.ceil(window_size / 2),
 	                    target_len)
-	x = np.array(range(window_size * len(y)))
+	x = np.array(range(int(window_size) * len(y)))
 	plt.figure(figsize=(15, 10))
 	plt.fill_between(x, y, 0,
 	                 facecolor='blue',
@@ -249,8 +249,6 @@ def worker(infile):
 	sam_parser = SamParser(infile)
 	for query, q_reverse, target, t_start, cigar in sam_parser:
 		idxs = parse_cigar(cigar, t_start - 1, q_reverse)
-		if idxs[0] > 200000 or idxs[-1] > 200000:
-			print(query, q_reverse, target, t_start, cigar)
 		if target not in ref_cov:
 			ref_cov[target] = {}
 		for i in idxs:
