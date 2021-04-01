@@ -5,27 +5,58 @@ import numpy as np
 import queue
 from queue import PriorityQueue
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
 from matplotlib.backends.backend_pdf import PdfPages
 
 
-def plot_cov(cov_dict, target, target_len, window_size, pdf_handle):
-	# y = rolling_average([(k, v) for k, v in cov_dict[target].items()], window_size, np.ceil(window_size / 2),
-	#                     target_len)
-	x = np.ceil(window_size / 2) * np.array(range(len(y)))
+def plot_data(fcount_data, thr_data, output_pdf_dir):
+	# Filecount data
+	y = np.array(fcount_data)
+	x = np.array(range(len(fcount_data)))
+
 	plt.figure(figsize=(15, 10))
-	plt.fill_between(x, y, 0,
-	                 facecolor='blue',
-	                 color='black',
-	                 alpha=0.3)
-	plt.xlabel('Genomic Location')
-	plt.ylabel('Coverage (Rolling Average)')
-	plt.title('Rolling Average Coverage, Reference Sequence {}'.format(target))
-	plt.ticklabel_format(style='sci', axis='x')
-	pdf_handle.savefig()
-	plt.close()
+	axes = plt.gca()
+	axes.set_xlim((x[0], x[-1]))
+	axes.set_ylim(y[0], y[-1])
+	axes.yaxis.set_major_locator(MaxNLocator(integer=True))
+	axes.xaxis.set_major_locator(MaxNLocator(integer=True))
+
+	fcount_pdf = output_pdf_dir + '/filecount_timeseries_graph.pdf'
+	with PdfPages(fcount_pdf) as pdf_handle:
+		plt.plot(x, y, marker='')
+		plt.xlabel('Minutes of Sequencing')
+		plt.ylabel('Number of Files Produced')
+		plt.title('Files produced per minute of Nanopore sequencing time')
+		pdf_handle.savefig()
+		plt.close()
+
+		# Filecount data
+		zipped_thr = list(zip(*thr_data))
+		bcr_pass = np.array(zipped_thr[1])
+		bcr_fail = np.array(zipped_thr[2])
+		x = np.array(range(len(bcr_pass)))
+		colors = [plt.cm.Set1(i) for i in range(2)]
+
+		plt.figure(figsize=(15, 10))
+		axes = plt.gca()
+		axes.set_xlim((x[0], x[-1]))
+		axes.set_ylim(0, max(bcr_pass[-1], bcr_fail[-1]))
+		axes.yaxis.set_major_locator(MaxNLocator(integer=True))
+		axes.xaxis.set_major_locator(MaxNLocator(integer=True))
+
+		tcount_pdf = output_pdf_dir + '/throughput_timeseries_graph.pdf'
+		with PdfPages(tcount_pdf) as pdf_handle:
+			plt.plot(x, bcr_pass, marker='', color=colors[0], label='Basecalled Reads Pass')
+			plt.plot(x, bcr_fail, marker='', color=colors[1], label='Basecalled Reads Fail')
+			plt.legend()
+			plt.xlabel('Minutes of Sequencing')
+			plt.ylabel('Number of Basecalled Reads Passing and Failing Filter')
+			plt.title('Throughput of Nanopore read generation over minutes of sequencing time')
+			pdf_handle.savefig()
+			plt.close()
 
 
-def write_timeseries(seq_dict, through_dict, output_csv_path):
+def write_timeseries(seq_dict, through_data, output_csv_dir):
 	q = PriorityQueue(maxsize=-1)
 	for v in seq_dict.values():
 		q.put(v, block=False)
@@ -43,7 +74,34 @@ def write_timeseries(seq_dict, through_dict, output_csv_path):
 			if q.empty():
 				break
 			qval = q.get(block=False)
-	print(filecounts)
+	with open(output_csv_dir + '/nanopore_filecounts.csv', 'w') as fcsv_out:
+		fcsv_out.write('time_minutes,file_count\n')
+		for i, val in enumerate(filecounts):
+			fcsv_out.write('{},{}\n'.format(
+				i+1,
+				val
+			))
+	with open(output_csv_dir + '/nanopore_throughput.csv', 'w') as tcsv_out:
+		tcsv_out.write('time_minutes,basecalled_reads_pass,basecalled_reads_fail,basecalled_basepairs\n')
+		for mintime, bcr_pass, bcr_fail, bcbp in through_data:
+			tcsv_out.write('{},{},{},{}\n'.format(
+				mintime,
+				bcr_pass,
+				bcr_fail,
+				bcbp
+			))
+
+	with open(output_csv_dir + '/nanopore_stats_overall.txt', 'w') as out:
+		out.write('Total Minutes: {}\nTotal Basecalled Reads Pass Filter: {}\nTotal Basecalled Reads Fail Filter: {}'
+		          '\nPercent Basecalled Reads Pass Filter: {}%\nTotal Bases Called: {}\n'.format(
+			through_data[-1][0],
+			through_data[-1][1],
+			through_data[-1][2],
+			100 * float(through_data[-1][1]) / (float(through_data[-1][1]) + float(through_data[-1][2])),
+			through_data[-1][3]
+		))
+
+	plot_data(filecounts, through_data, output_csv_dir)
 
 
 def parse_seqfile(infile):
