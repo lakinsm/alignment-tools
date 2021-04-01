@@ -60,13 +60,12 @@ def parse_seqfile(infile):
 		while line:
 			entries = line.split()
 			fq_name = entries[0]
-			if '_fail_' in fq_name:
-				continue
-			sectime = float(entries[6])
-			if fq_name not in ret:
-				ret[fq_name] = sectime
-			elif ret[fq_name] < sectime:
-				ret[fq_name] = sectime
+			if '_fail_' not in fq_name:
+				sectime = float(entries[6])
+				if fq_name not in ret:
+					ret[fq_name] = sectime
+				elif ret[fq_name] < sectime:
+					ret[fq_name] = sectime
 			line = f.readline()
 	return ret
 
