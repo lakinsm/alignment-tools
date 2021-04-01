@@ -43,6 +43,7 @@ def plot_data(fcount_data, thr_data, output_pdf_dir):
 		axes.set_ylim(0, max(bcr_pass[-1], bcr_fail[-1]))
 		axes.yaxis.set_major_locator(MaxNLocator(integer=True))
 		axes.xaxis.set_major_locator(MaxNLocator(integer=True))
+		axes.ticklabel_format(useOffset=False)
 
 		tcount_pdf = output_pdf_dir + '/throughput_timeseries_graph.pdf'
 		with PdfPages(tcount_pdf) as pdf_handle:
