@@ -81,6 +81,7 @@ def parse_throughfile(infile):
 			bcr_fail = int(entries[3])
 			bcbp = int(entries[8])
 			ret += (mintime, bcr_pass, bcr_fail, bcbp)
+			line = f.readline()
 	return ret
 
 
