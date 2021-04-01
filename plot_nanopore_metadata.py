@@ -37,10 +37,9 @@ def write_timeseries(seq_dict, through_dict, output_csv_path):
 		filecounts.append(0)
 		while qval < cur_sectime:
 			filecounts[-1] += 1
-			try:
-				qval = q.get(block=False)
-			except queue.Empty:
+			if q.empty():
 				break
+			qval = q.get(block=False)
 	print(filecounts)
 
 
