@@ -66,4 +66,4 @@ parser.add_argument('dest_dir', default=None, type=str,
 if __name__ == '__main__':
 	args = parser.parse_args()
 	fq_pass_paths = find_fastq_pass(os.path.realpath(args.root_dir))
-	check_file_match(args.root_dir, args.dest_dir, fq_pass_paths)
+	check_file_match(os.path.realpath(args.root_dir), os.path.realpath(args.dest_dir), fq_pass_paths)
