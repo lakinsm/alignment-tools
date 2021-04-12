@@ -7,6 +7,7 @@ import argparse
 import datetime
 import re
 import hashlib
+import shutil
 
 if sys.version_info[0] < 3:
 	raise Exception('Python 3 or a more recent version is required.')
@@ -72,8 +73,32 @@ def print_file_status(prefix, updated, existing, sname, fname, terminal=False):
 
 
 def file_as_bytes(fhandle):
+	"""
+	Read file and return as bytes.
+	:param fhandle: FILE OBJECT, open file handle from python's open() in read and binary mode
+	:return: BYTES OBJECT, binary file as output from python's read()
+	"""
 	with fhandle:
 		return fhandle.read()
+
+
+def update_dest_file_robust(spath, dpath, source_sha256):
+	"""
+	Copy source to destination temporary file, then move into real destination file once copy is complete and sha256
+	sum has been verified.
+	:param spath: STR, source file path
+	:param dpath: STR, destination file path
+	:param source_sha256: STR, source SHA250 file hash sum
+	:return: None
+	"""
+	parent_dir = '/'.join(spath.split('/')[:-1])
+	parent_dir_status = os.path.isdir(parent_dir)
+	if not parent_dir_status:
+		os.makedirs(parent_dir, exist_ok=True)
+	shutil.copy2(spath, dpath + '_temp')
+	temp_dest_hash = hashlib.sha256(file_as_bytes(open(dpath + '_temp', 'rb'))).hexdigest()
+	if temp_dest_hash == source_sha256:
+		shutil.move(dpath + '_temp', dpath)
 
 
 def check_file_match(root_source, root_dest, fq_pass, write_text_log=None):
@@ -90,7 +115,7 @@ def check_file_match(root_source, root_dest, fq_pass, write_text_log=None):
 	"""
 	log_handle = None
 	if write_text_log:
-		log_handle = open(write_text_log, 'a')
+		log_handle = open(write_text_log, 'w')
 		log_handle.write('\n\n{}\tBegin file checking and copy, source: {}, destination: {}\n'.format(
 			datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
 			root_source,
@@ -111,15 +136,18 @@ def check_file_match(root_source, root_dest, fq_pass, write_text_log=None):
 
 				# Check if exists
 				dest_isfile = os.path.isfile(dest_path)
+				source_hash = hashlib.sha256(file_as_bytes(open(source_path, 'rb'))).hexdigest()
 				if not dest_isfile:
-					source_md5 = hashlib.sha256(file_as_bytes(open(source_path, 'rb'))).hexdigest()
-					print('\n')
-					print(source_md5)
-					sys.exit()
+					update_dest_file_robust(source_path, dest_path, source_hash)
 					n_updated += 1
 				else:
-					# Check MD5 sum
-					x = 1
+					# Check SHA256 hash sum
+					dest_hash = hashlib.sha256(file_as_bytes(open(dest_path, 'rb'))).hexdigest()
+					if source_hash == dest_hash:
+						n_existing += 1
+					else:
+						update_dest_file_robust(source_path, dest_path, source_hash)
+						n_updated += 1
 
 				# Logging
 				if (n_existing + n_updated) % 5 == 0:
