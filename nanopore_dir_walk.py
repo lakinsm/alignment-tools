@@ -88,7 +88,7 @@ def update_dest_file_robust(spath, dpath, source_sha256):
 	sum has been verified.
 	:param spath: STR, source file path
 	:param dpath: STR, destination file path
-	:param source_sha256: STR, source SHA250 file hash sum
+	:param source_sha256: STR, source SHA256 file hash sum
 	:return: None
 	"""
 	parent_dir = '/'.join(spath.split('/')[:-1])
@@ -99,6 +99,12 @@ def update_dest_file_robust(spath, dpath, source_sha256):
 	temp_dest_hash = hashlib.sha256(file_as_bytes(open(dpath + '_temp', 'rb'))).hexdigest()
 	if temp_dest_hash == source_sha256:
 		shutil.move(dpath + '_temp', dpath)
+	else:
+		sys.stderr.write('Copy hashsum failed for source file: {}, destination file: {}'.format(spath, dpath))
+		dest_temp_isfile = os.path.isfile(dest_path + '_temp')
+		if dest_temp_isfile:
+			os.remove(dest_path + '_temp')
+		raise ValueError
 
 
 def check_file_match(root_source, root_dest, fq_pass, write_text_log=None):
@@ -116,7 +122,7 @@ def check_file_match(root_source, root_dest, fq_pass, write_text_log=None):
 	log_handle = None
 	if write_text_log:
 		log_handle = open(write_text_log, 'w')
-		log_handle.write('\n\n{}\tBegin file checking and copy, source: {}, destination: {}\n'.format(
+		log_handle.write('{}\tBegin file checking and copy, source: {}, destination: {}\n'.format(
 			datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
 			root_source,
 			root_dest
@@ -136,6 +142,9 @@ def check_file_match(root_source, root_dest, fq_pass, write_text_log=None):
 
 				# Check if exists
 				dest_isfile = os.path.isfile(dest_path)
+				dest_temp_isfile = os.path.isfile(dest_path + '_temp')
+				if dest_temp_isfile:
+					os.remove(dest_path + '_temp')
 				source_hash = hashlib.sha256(file_as_bytes(open(source_path, 'rb'))).hexdigest()
 				if not dest_isfile:
 					update_dest_file_robust(source_path, dest_path, source_hash)
