@@ -95,7 +95,7 @@ def check_file_match(root_source, root_dest, fq_pass, write_text_log=None):
 						samplename,
 						flowcell_id
 					))
-		sys.stdout.write('{} (updated={}, existing={}), sample: {}, flowcell: {}\r'.format(
+		sys.stdout.write('{} (updated={}, existing={}), sample: {}, flowcell: {}\n'.format(
 			stdout_prefix,
 			n_updated,
 			n_existing,
