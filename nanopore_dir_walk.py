@@ -22,12 +22,9 @@ def os_walk_condition(root, s):
 	root_base = root.split('/')[-1]
 	branch = root_base + '/' + s.split(root)[-1].lstrip('/')
 	branch_split = branch.split('/')
-	print(s, branch, branch_split)
-	if len(branch_split) > 1:
-		grandparent, parent = branch_split[-2:]
-		if grandparent == parent or parent == 'no_sample' or grandparent == root_base:
-			if parent not in OS_WALK_EXCLUDES:
-				status = True
+	if len(branch_split) > 2:
+		if branch_split[-1] not in OS_WALK_EXCLUDES:
+			status = True
 	return status
 
 
