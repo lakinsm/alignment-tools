@@ -164,7 +164,7 @@ def check_file_match(root_source, root_dest, fq_pass, write_text_log=None):
 			for f in filenames:
 				fstatus = 'UPDATED'
 				source_path = os.path.join(this_root, f)
-				dest_path = '{}/{}'.format(root_dest.rstrip('/'), source_path.split(root_source)[-1])
+				dest_path = '{}/{}'.format(root_dest.rstrip('/'), source_path.split(root_source)[-1].lstrip('/'))
 
 				# Check if exists
 				dest_isfile = os.path.isfile(dest_path)
