@@ -46,6 +46,30 @@ def find_ont_sample_flowcell(fpath):
 	return samplename, flowcell_id
 
 
+def print_file_status(prefix, updated, existing, sname, fname, terminal=False):
+	"""
+	Print file parsing status information to stdout to update the user.
+	:param prefix: STR, prefix containing the start date/time
+	:param updated: INT, number of updated files
+	:param existing: INT, number of existing files (not updated)
+	:param sname: STR, samplename of current fastq_pass directory
+	:param fname: STR, flowcell ID of current fastq_pass directory
+	:param terminal: BOOL, add line ending
+	:return: None
+	"""
+	sys.stdout.write('{} (updated={}, existing={}), sample: {}, flowcell: {}'.format(
+		prefix,
+		updated,
+		existing,
+		sname,
+		fname
+	))
+	if terminal:
+		sys.stdout.write('\n')
+	else:
+		sys.stdout.write('\r')
+
+
 def check_file_match(root_source, root_dest, fq_pass, write_text_log=None):
 	"""
 	Compare FASTQ and Nanopore flowcell metadata files from source to destination, and update destination files if
@@ -72,15 +96,10 @@ def check_file_match(root_source, root_dest, fq_pass, write_text_log=None):
 	for fq_path in fq_pass:
 		samplename, flowcell_id = find_ont_sample_flowcell(fq_path)
 		stdout_prefix = '{} Checking fastq_pass'.format(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-		sys.stdout.write('{} (updated={}, existing={}), sample: {}, flowcell: {}\r'.format(
-			stdout_prefix,
-			n_updated,
-			n_existing,
-			samplename,
-			flowcell_id
-		))
+		print_file_status(stdout_prefix, n_updated, n_existing, samplename, flowcell_id)
 		for this_root, _, filenames in os.walk(fq_path):
 			for f in filenames:
+				fstatus = 'UPDATED'
 				source_path = os.path.join(this_root, f)
 				dest_path = '{}/{}'.format(root_dest.rstrip('/'), source_path.split(root_source)[-1])
 				# Check if exists
@@ -88,20 +107,18 @@ def check_file_match(root_source, root_dest, fq_pass, write_text_log=None):
 				if not dest_isfile:
 					n_updated += 1
 				if (n_existing + n_updated) % 5 == 0:
-					sys.stdout.write('{} (updated={}, existing={}), sample: {}, flowcell: {}\r'.format(
-						stdout_prefix,
-						n_updated,
-						n_existing,
+					print_file_status(stdout_prefix, n_updated, n_existing, samplename, flowcell_id)
+				if log_handle:
+					# datetime, sample, flowcell, status, source, dest
+					log_handle.write('\t{}\t{}\t{}\t{}\t{}\t{}\n'.format(
+						datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
 						samplename,
-						flowcell_id
+						flowcell_id,
+						fstatus,
+						source_path,
+						dest_path
 					))
-		sys.stdout.write('{} (updated={}, existing={}), sample: {}, flowcell: {}\n'.format(
-			stdout_prefix,
-			n_updated,
-			n_existing,
-			samplename,
-			flowcell_id
-		))
+		print_file_status(stdout_prefix, n_updated, n_existing, samplename, flowcell_id, terminal=True)
 	if log_handle:
 		log_handle.close()
 
