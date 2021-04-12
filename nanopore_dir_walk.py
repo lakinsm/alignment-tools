@@ -25,6 +25,8 @@ def os_walk_condition(root, s):
 	if len(branch_split) > 2:
 		if branch_split[-1] not in OS_WALK_EXCLUDES:
 			status = True
+	else:
+		status = True
 	return status
 
 
