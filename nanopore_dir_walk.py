@@ -106,13 +106,15 @@ def check_file_match(root_source, root_dest, fq_pass, write_text_log=None):
 				# Check if exists
 				dest_isfile = os.path.isfile(dest_path)
 				if not dest_isfile:
+					source_md5 = os.system('md5sum {}'.format(source_path))
+					print(source_md5)
+					sys.exit()
 					n_updated += 1
 				else:
 					# Check MD5 sum
 					source_md5 = os.system('md5sum {}'.format(source_path))
 					dest_md5 = os.system('md5sum {}'.format(dest_path))
 					print(source_md5, dest_md5)
-					sys.exit()
 
 				# Logging
 				if (n_existing + n_updated) % 5 == 0:
