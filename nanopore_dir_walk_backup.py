@@ -51,7 +51,7 @@ def find_fastq_pass(root_dir):
 	:return: tuple of absolute paths to all fastq_pass directories in root_dir
 	"""
 	fq_pass = tuple()
-	for root, dirs, _ in os.walk(root_dir, topdown=True):
+	for root, dirs, _ in os.walk(root_dir + '/', topdown=True):
 		print(root)
 		dirs[:] = [d for d in dirs if os_walk_condition(root_dir, os.path.join(root, d))]
 		for d in fnmatch.filter(dirs, 'fastq_pass'):
