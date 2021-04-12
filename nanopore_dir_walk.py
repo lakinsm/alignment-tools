@@ -8,6 +8,7 @@ import datetime
 import re
 import hashlib
 import shutil
+import glob
 
 if sys.version_info[0] < 3:
 	raise Exception('Python 3 or a more recent version is required.')
@@ -175,6 +176,13 @@ def check_file_match(root_source, root_dest, fq_pass, write_text_log=None):
 		samplename, flowcell_id = find_ont_sample_flowcell(fq_path)
 		stdout_prefix = '{} Checking fastq_pass'.format(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 		print_file_status(stdout_prefix, n_updated, n_existing, samplename, flowcell_id)
+		# Metadata files
+		flowcell_dir = '/'.join(fq_path.rstrip('/').split('/')[:-1])
+		for f in glob.glob(flowcell_dir + '/*{}*'.format(flowcell_id)):
+			print(f)
+		sys.exit()
+
+		# FASTQ files
 		for this_root, _, filenames in os.walk(fq_path):
 			for f in filenames:
 				fstatus = 'UPDATED'
