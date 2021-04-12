@@ -19,7 +19,7 @@ OS_WALK_EXCLUDES = {'fast5', 'fast5_pass', 'fast5_fail', 'fastq_fail'}
 
 def os_walk_condition(root, s):
 	status = False
-	branch = root.rstrip('/') + '/' + s.lstrip('/').split(root)[-1]
+	branch = root.split('/')[-1] + '/' + s.split(root)[-1].lstrip('/')
 	branch_split = branch.split('/')
 	print(s, branch, branch_split)
 	if len(branch_split) > 1:
