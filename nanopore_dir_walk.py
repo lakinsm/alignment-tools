@@ -136,17 +136,16 @@ def update_dest_file_robust_debug(spath, dpath, source_sha256):
 	parent_dir_status = os.path.isdir(parent_dir)
 	if not parent_dir_status:
 		os.makedirs(parent_dir, exist_ok=True)
-	print(spath, dpath)
-	# shutil.copy2(spath, dpath + '_temp')
-	# temp_dest_hash = hashlib.sha256(file_as_bytes(open(dpath + '_temp', 'rb'))).hexdigest()
-	# if temp_dest_hash == source_sha256:
-	# 	shutil.move(dpath + '_temp', dpath)
-	# else:
-	# 	sys.stderr.write('Copy hashsum failed for source file: {}, destination file: {}'.format(spath, dpath))
-	# 	dest_temp_isfile = os.path.isfile(dpath + '_temp')
-	# 	if dest_temp_isfile:
-	# 		os.remove(dpath + '_temp')
-	# 	raise ValueError
+	shutil.copy2(spath, dpath + '_temp')
+	temp_dest_hash = hashlib.sha256(file_as_bytes(open(dpath + '_temp', 'rb'))).hexdigest()
+	if temp_dest_hash == source_sha256:
+		shutil.move(dpath + '_temp', dpath)
+	else:
+		sys.stderr.write('Copy hashsum failed for source file: {}, destination file: {}'.format(spath, dpath))
+		dest_temp_isfile = os.path.isfile(dpath + '_temp')
+		if dest_temp_isfile:
+			os.remove(dpath + '_temp')
+		raise ValueError
 
 
 def check_file_match(root_source, root_dest, fq_pass, write_text_log=None):
