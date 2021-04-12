@@ -57,7 +57,7 @@ def print_file_status(prefix, updated, existing, sname, fname, terminal=False):
 	:param terminal: BOOL, add line ending
 	:return: None
 	"""
-	sys.stdout.write('{} (updated={}, existing={}), sample: {}, flowcell: {}'.format(
+	sys.stdout.write('{}\tupdated: {}\texisting: {}\tsample: {}\tflowcell: {}'.format(
 		prefix,
 		updated,
 		existing,
