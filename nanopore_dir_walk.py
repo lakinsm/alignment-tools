@@ -24,9 +24,9 @@ def find_fastq_pass(root_dir):
 
 
 parser = argparse.ArgumentParser('nanopore_dir_walk.py')
-parser.add_argument('root_dir', default=None, required=True, type=str,
+parser.add_argument('root_dir', default=None, type=str,
                     help='Root instrument directory to check for updated files')
-parser.add_argument('dest_dir', default=None, required=True, type=str,
+parser.add_argument('dest_dir', default=None, type=str,
                     help='Destination directory to check for existing files to update')
 
 
