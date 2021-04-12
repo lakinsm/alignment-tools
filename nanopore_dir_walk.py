@@ -19,12 +19,13 @@ OS_WALK_EXCLUDES = {'fast5', 'fast5_pass', 'fast5_fail', 'fastq_fail'}
 
 def os_walk_condition(root, s):
 	status = False
-	branch = root.split('/')[-1] + '/' + s.split(root)[-1].lstrip('/')
+	root_base = root.split('/')[-1]
+	branch = root_base + '/' + s.split(root)[-1].lstrip('/')
 	branch_split = branch.split('/')
 	print(s, branch, branch_split)
 	if len(branch_split) > 1:
 		grandparent, parent = branch_split[-2:]
-		if grandparent == parent or parent == 'no_sample':
+		if grandparent == parent or parent == 'no_sample' or grandparent == root_base:
 			if parent not in OS_WALK_EXCLUDES:
 				status = True
 	return status
