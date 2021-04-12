@@ -101,10 +101,36 @@ def update_dest_file_robust(spath, dpath, source_sha256):
 		shutil.move(dpath + '_temp', dpath)
 	else:
 		sys.stderr.write('Copy hashsum failed for source file: {}, destination file: {}'.format(spath, dpath))
-		dest_temp_isfile = os.path.isfile(dest_path + '_temp')
+		dest_temp_isfile = os.path.isfile(dpath + '_temp')
 		if dest_temp_isfile:
-			os.remove(dest_path + '_temp')
+			os.remove(dpath + '_temp')
 		raise ValueError
+
+
+def update_dest_file_robust_debug(spath, dpath, source_sha256):
+	"""
+	Copy source to destination temporary file, then move into real destination file once copy is complete and sha256
+	sum has been verified.
+	:param spath: STR, source file path
+	:param dpath: STR, destination file path
+	:param source_sha256: STR, source SHA256 file hash sum
+	:return: None
+	"""
+	parent_dir = '/'.join(spath.split('/')[:-1])
+	parent_dir_status = os.path.isdir(parent_dir)
+	if not parent_dir_status:
+		os.makedirs(parent_dir, exist_ok=True)
+	print(spath, dpath)
+	# shutil.copy2(spath, dpath + '_temp')
+	# temp_dest_hash = hashlib.sha256(file_as_bytes(open(dpath + '_temp', 'rb'))).hexdigest()
+	# if temp_dest_hash == source_sha256:
+	# 	shutil.move(dpath + '_temp', dpath)
+	# else:
+	# 	sys.stderr.write('Copy hashsum failed for source file: {}, destination file: {}'.format(spath, dpath))
+	# 	dest_temp_isfile = os.path.isfile(dpath + '_temp')
+	# 	if dest_temp_isfile:
+	# 		os.remove(dpath + '_temp')
+	# 	raise ValueError
 
 
 def check_file_match(root_source, root_dest, fq_pass, write_text_log=None):
@@ -147,7 +173,7 @@ def check_file_match(root_source, root_dest, fq_pass, write_text_log=None):
 					os.remove(dest_path + '_temp')
 				source_hash = hashlib.sha256(file_as_bytes(open(source_path, 'rb'))).hexdigest()
 				if not dest_isfile:
-					update_dest_file_robust(source_path, dest_path, source_hash)
+					update_dest_file_robust_debug(source_path, dest_path, source_hash)
 					n_updated += 1
 				else:
 					# Check SHA256 hash sum
@@ -155,7 +181,7 @@ def check_file_match(root_source, root_dest, fq_pass, write_text_log=None):
 					if source_hash == dest_hash:
 						n_existing += 1
 					else:
-						update_dest_file_robust(source_path, dest_path, source_hash)
+						update_dest_file_robust_debug(source_path, dest_path, source_hash)
 						n_updated += 1
 
 				# Logging
@@ -181,9 +207,11 @@ parser.add_argument('root_dir', default=None, type=str,
                     help='Root instrument directory to check for updated files')
 parser.add_argument('dest_dir', default=None, type=str,
                     help='Destination directory to check for existing files to update')
+parser.add_argument('-l', '--logfile', default=None, type=str,
+                    help='Path to output log file')
 
 
 if __name__ == '__main__':
 	args = parser.parse_args()
 	fq_pass_paths = find_fastq_pass(os.path.realpath(args.root_dir))
-	check_file_match(os.path.realpath(args.root_dir), os.path.realpath(args.dest_dir), fq_pass_paths)
+	check_file_match(os.path.realpath(args.root_dir), os.path.realpath(args.dest_dir), fq_pass_paths, write_text_log=args.logfile)
