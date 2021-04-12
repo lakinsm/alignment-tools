@@ -14,6 +14,19 @@ if sys.version_info[0] < 3:
 
 
 MINKNOW_REGEX = re.compile(r'[0-9]{8}_[0-9]{4}_[0-9A-Z\-]+_([A-Z]{3}[0-9]+)_')
+OS_WALK_EXCLUDES = {'fast5', 'fast5_pass', 'fast5_fail', 'fastq_fail'}
+
+
+def os_walk_condition(root, s):
+	status = False
+	branch = s.split(root)[-1]
+	branch_split = branch.split('/')
+	if len(branch_split) > 1:
+		grandparent, parent = branch_split[-2:]
+		if grandparent == parent or parent == 'no_sample':
+			if parent not in OS_WALK_EXCLUDES:
+				status = True
+	return status
 
 
 def find_fastq_pass(root_dir):
@@ -24,8 +37,10 @@ def find_fastq_pass(root_dir):
 	:return: tuple of absolute paths to all fastq_pass directories in root_dir
 	"""
 	fq_pass = tuple()
-	for root, dirnames, _ in os.walk(root_dir):
-		for d in fnmatch.filter(dirnames, 'fastq_pass'):
+
+	for root, dirs, _ in os.walk(root_dir, topdown=True):
+		dirs[:] = [d for d in dirs if os_walk_condition(root_dir, os.path.join(root, d))]
+		for d in fnmatch.filter(dirs, 'fastq_pass'):
 			fq_pass += (os.path.join(root, d),)
 	return fq_pass
 
