@@ -5,9 +5,13 @@ import os
 import fnmatch
 import argparse
 import datetime
+import re
 
 if sys.version_info[0] < 3:
 	raise Exception('Python 3 or a more recent version is required.')
+
+
+MINKNOW_REGEX = re.compile(r'[0-9]{8}_[0-9]{4}_[0-9A-Z\-]+_([A-Z]{3}[0-9]+)_')
 
 
 def find_fastq_pass(root_dir):
@@ -22,6 +26,24 @@ def find_fastq_pass(root_dir):
 		for d in fnmatch.filter(dirnames, 'fastq_pass'):
 			fq_pass += (os.path.join(root, d),)
 	return fq_pass
+
+
+def find_ont_sample_flowcell(fpath):
+	"""
+	Return the samplename and flowcell name as specified by the input directory path.  This uses regular expressions
+	to identify the flowcell and finds the samplename from the parent directories to the flowcell ID.
+	:param fpath: STR, directory path for a fastq_pass folder
+	:return: TUPLE of STR, (samplename, flowcell_id)
+	"""
+	flowcell_id = MINKNOW_REGEX.search(fpath).group(1)
+	sample1, sample2 = fpath.split(flowcell_id)[0].split('/')[-3:-1]
+	if sample2 == 'no_sample':
+		samplename = sample1
+	elif sample1 == sample2:
+		samplename = sample2
+	else:
+		samplename = sample1
+	return samplename, flowcell_id
 
 
 def check_file_match(root_source, root_dest, fq_pass, write_text_log=None):
@@ -45,13 +67,41 @@ def check_file_match(root_source, root_dest, fq_pass, write_text_log=None):
 			root_dest
 		))
 
+	n_existing = 0
+	n_updated = 0
 	for fq_path in fq_pass:
+		samplename, flowcell_id = find_ont_sample_flowcell(fq_path)
+		stdout_prefix = '{} Checking fastq_pass'.format(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+		sys.stdout.write('{} (updated={}, existing={}), sample: {}, flowcell: {}\r'.format(
+			stdout_prefix,
+			n_updated,
+			n_existing,
+			samplename,
+			flowcell_id
+		))
 		for this_root, _, filenames in os.walk(fq_path):
 			for f in filenames:
 				source_path = os.path.join(this_root, f)
-				dest_path = '{}/{}'.format(root_dest, source_path.split(root_source)[-1])
-				print(dest_path)
-
+				dest_path = '{}/{}'.format(root_dest.rstrip('/'), source_path.split(root_source)[-1])
+				# Check if exists
+				dest_isfile = os.path.isfile(dest_path)
+				if not dest_isfile:
+					n_updated += 1
+				if (n_existing + n_updated) % 5 == 0:
+					sys.stdout.write('{} (updated={}, existing={}), sample: {}, flowcell: {}\r'.format(
+						stdout_prefix,
+						n_updated,
+						n_existing,
+						samplename,
+						flowcell_id
+					))
+		sys.stdout.write('{} (updated={}, existing={}), sample: {}, flowcell: {}\r'.format(
+			stdout_prefix,
+			n_updated,
+			n_existing,
+			samplename,
+			flowcell_id
+		))
 	if log_handle:
 		log_handle.close()
 
