@@ -48,7 +48,9 @@ def check_file_match(root_source, root_dest, fq_pass, write_text_log=None):
 	for fq_path in fq_pass:
 		for this_root, _, filenames in os.walk(fq_path):
 			for f in filenames:
-				print(os.path.join(this_root, f))
+				source_path = os.path.join(this_root, f)
+				dest_path = '{}/{}'.format(root_source, source_path.split(root_source)[-1])
+				print(dest_path)
 
 	if log_handle:
 		log_handle.close()
