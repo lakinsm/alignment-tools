@@ -33,6 +33,7 @@ def os_walk_condition(r, s):
 	root_base = r.split('/')[-1]
 	branch = root_base + '/' + s.split(r)[-1].lstrip('/')
 	branch_split = branch.split('/')
+	print(r, s, root_base, branch, branch_split)
 	if len(branch_split) > 2:
 		if branch_split[-1] not in OS_WALK_EXCLUDES:
 			status = True
