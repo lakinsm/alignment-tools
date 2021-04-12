@@ -21,6 +21,7 @@ def os_walk_condition(root, s):
 	status = False
 	branch = s.split(root)[-1]
 	branch_split = branch.split('/')
+	print(s, branch, branch_split)
 	if len(branch_split) > 1:
 		grandparent, parent = branch_split[-2:]
 		if grandparent == parent or parent == 'no_sample':
