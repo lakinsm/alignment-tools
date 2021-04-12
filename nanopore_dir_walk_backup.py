@@ -191,6 +191,7 @@ def check_file_match(root_source, root_dest, fq_pass, write_text_log=None, slurm
 				# Check SHA256 hash sum
 				dest_hash = hashlib.sha256(file_as_bytes(open(dest_path, 'rb'))).hexdigest()
 				if source_hash == dest_hash:
+					fstatus = 'EXISTING'
 					n_existing += 1
 				else:
 					update_dest_file_robust(f, dest_path, source_hash)
@@ -230,6 +231,7 @@ def check_file_match(root_source, root_dest, fq_pass, write_text_log=None, slurm
 					# Check SHA256 hash sum
 					dest_hash = hashlib.sha256(file_as_bytes(open(dest_path, 'rb'))).hexdigest()
 					if source_hash == dest_hash:
+						fstatus = 'EXISTING'
 						n_existing += 1
 					else:
 						update_dest_file_robust(source_path, dest_path, source_hash)
