@@ -8,6 +8,6 @@ module load lakinsm-alignment-tools
 # 2. Destination backup directory
 
 echo -e "\n$(date): Starting backup of folder $1 to $2\n"
-this_datetime=$( date +"%FT%H%M" )
+this_datetime=$( date +"%FT%H%M%S" )
 nanopore_dir_walk_backup.py "$1" "$2" --logfile "/lustrefs/data/backup_logs/${this_datetime}_python_script.log" -n
 echo -e "\n$(date): Backup finished for folder $1 to $2\n"
