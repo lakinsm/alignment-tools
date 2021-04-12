@@ -116,7 +116,7 @@ def update_dest_file_robust_debug(spath, dpath, source_sha256):
 	:param source_sha256: STR, source SHA256 file hash sum
 	:return: None
 	"""
-	parent_dir = '/'.join(spath.split('/')[:-1])
+	parent_dir = '/'.join(dpath.split('/')[:-1])
 	parent_dir_status = os.path.isdir(parent_dir)
 	if not parent_dir_status:
 		os.makedirs(parent_dir, exist_ok=True)
