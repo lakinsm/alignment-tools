@@ -268,6 +268,7 @@ parser.add_argument('-s', '--slurm', default=False, action='store_true',
 
 if __name__ == '__main__':
 	args = parser.parse_args()
+	print(os.path.realpath(args.source_dir))
 	fq_pass_paths = find_fastq_pass(os.path.realpath(args.source_dir))
 	print(fq_pass_paths)
 	check_file_match(os.path.realpath(args.source_dir),
