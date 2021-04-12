@@ -33,13 +33,11 @@ def os_walk_condition(r, s):
 	root_base = r.split('/')[-1]
 	branch = root_base + '/' + s.split(r)[-1].lstrip('/')
 	branch_split = branch.split('/')
-	print(r, s, root_base, branch, branch_split)
 	if len(branch_split) > 2:
 		if branch_split[-1] not in OS_WALK_EXCLUDES:
 			status = True
 	else:
 		status = True
-	print(status, branch_split)
 	return status
 
 
@@ -52,10 +50,7 @@ def find_fastq_pass(root_dir):
 	"""
 	fq_pass = tuple()
 	for root, dirs, _ in os.walk(root_dir + '/', topdown=True):
-		print(root)
-		print(dirs)
 		dirs[:] = [d for d in dirs if os_walk_condition(root_dir, os.path.join(root, d))]
-		print(dirs)
 		for d in fnmatch.filter(dirs, 'fastq_pass'):
 			fq_pass += (os.path.join(root, d),)
 	return fq_pass
@@ -148,7 +143,7 @@ def update_dest_file_robust(spath, dpath, source_sha256, n_tries=3, sec_wait=30)
 		raise ValueError
 
 
-def check_file_match(root_source, root_dest, fq_pass, write_text_log=None, slurm=False):
+def check_file_match(root_source, root_dest, fq_pass, write_text_log=None, non_interactive=False):
 	"""
 	Compare FASTQ and Nanopore flowcell metadata files from source to destination, and update destination files if
 	not matching from source.  This is a destructive/overwrite operation that uses a temporary intermediate file.
@@ -175,7 +170,7 @@ def check_file_match(root_source, root_dest, fq_pass, write_text_log=None, slurm
 	for fq_path in fq_pass:
 		samplename, flowcell_id = find_ont_sample_flowcell(fq_path)
 		stdout_prefix = '{} Checking fastq_pass'.format(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-		print_file_status(stdout_prefix, n_updated, n_existing, samplename, flowcell_id, slurm)
+		print_file_status(stdout_prefix, n_updated, n_existing, samplename, flowcell_id, non_interactive)
 
 		# Metadata files
 		flowcell_dir = '/'.join(fq_path.rstrip('/').split('/')[:-1])
@@ -204,7 +199,7 @@ def check_file_match(root_source, root_dest, fq_pass, write_text_log=None, slurm
 
 			# Logging
 			if (n_existing + n_updated) % 5 == 0:
-				print_file_status(stdout_prefix, n_updated, n_existing, samplename, flowcell_id, slurm)
+				print_file_status(stdout_prefix, n_updated, n_existing, samplename, flowcell_id, non_interactive)
 			if log_handle:
 				# datetime, sample, flowcell, status, source, dest
 				log_handle.write('\t{}\t{}\t{}\t{}\t{}\t{}\n'.format(
@@ -244,7 +239,7 @@ def check_file_match(root_source, root_dest, fq_pass, write_text_log=None, slurm
 
 				# Logging
 				if (n_existing + n_updated) % 5 == 0:
-					print_file_status(stdout_prefix, n_updated, n_existing, samplename, flowcell_id, slurm)
+					print_file_status(stdout_prefix, n_updated, n_existing, samplename, flowcell_id, non_interactive)
 				if log_handle:
 					# datetime, sample, flowcell, status, source, dest
 					log_handle.write('\t{}\t{}\t{}\t{}\t{}\t{}\n'.format(
@@ -267,17 +262,15 @@ parser.add_argument('dest_dir', default=None, type=str,
                     help='Destination backup directory to check for existing files to update')
 parser.add_argument('-l', '--logfile', default=None, type=str,
                     help='Path to output log file')
-parser.add_argument('-s', '--slurm', default=False, action='store_true',
-                    help='Flag indicated no carriage returns so that SLURM logs are formatted properly')
+parser.add_argument('-n', '--non_interactive', default=False, action='store_true',
+                    help='Flag indicated no carriage returns so that logs are formatted properly')
 
 
 if __name__ == '__main__':
 	args = parser.parse_args()
-	print(os.path.realpath(args.source_dir))
 	fq_pass_paths = find_fastq_pass(os.path.realpath(args.source_dir))
-	print(fq_pass_paths)
 	check_file_match(os.path.realpath(args.source_dir),
 	                 os.path.realpath(args.dest_dir),
 	                 fq_pass_paths,
 	                 write_text_log=args.logfile,
-	                 slurm=args.slurm)
+	                 non_interactive=args.non_interactive)
