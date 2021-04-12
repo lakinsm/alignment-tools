@@ -9,13 +9,13 @@
 #SBATCH --output=/lustrefs/data/backup_logs/sbatch_nanopore_backup_job_%j.log
 
 module load python37
+module load lakinsm-alignment-tools
 
 # Arguments:
-# 1. Python script executable (nanopore_dir_walk_backup.py)
-# 2. Source instrument root directory
-# 3. Destination backup directory
+# 1. Source instrument root directory
+# 2. Destination backup directory
 
-echo -e "\n$(date): Starting backup of folder $2 to $3 using script $1\n"
+echo -e "\n$(date): Starting backup of folder $1 to $2\n"
 this_datetime=$( date +"%FT%T" )
-srun python3 "$1" "$2" "$3" --logfile "/lustrefs/data/backup_logs/${this_datetime}_python_script.log"
-echo -e "\n$(date): Backup finished for folder $2 to $3 using script $1\n"
+srun nanopore_dir_walk_backup.py "$1" "$2" --logfile "/lustrefs/data/backup_logs/${this_datetime}_python_script.log"
+echo -e "\n$(date): Backup finished for folder $1 to $2\n"
