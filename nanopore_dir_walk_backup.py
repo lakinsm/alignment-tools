@@ -119,7 +119,7 @@ def update_dest_file_robust(spath, dpath, source_sha256, n_tries=3, sec_wait=30)
 	:param sec_wait: INT, number of seconds to wait between tries
 	:return: None
 	"""
-	parent_dir = '/'.join(spath.split('/')[:-1])
+	parent_dir = '/'.join(dpath.split('/')[:-1])
 	parent_dir_status = os.path.isdir(parent_dir)
 	if not parent_dir_status:
 		os.makedirs(parent_dir, exist_ok=True)
