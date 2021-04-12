@@ -113,6 +113,7 @@ def check_file_match(root_source, root_dest, fq_pass, write_text_log=None):
 				dest_isfile = os.path.isfile(dest_path)
 				if not dest_isfile:
 					source_md5 = hashlib.sha256(file_as_bytes(open(source_path, 'rb'))).hexdigest()
+					print('\n')
 					print(source_md5)
 					sys.exit()
 					n_updated += 1
