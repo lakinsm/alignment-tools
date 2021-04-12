@@ -57,12 +57,12 @@ def print_file_status(prefix, updated, existing, sname, fname, terminal=False):
 	:param terminal: BOOL, add line ending
 	:return: None
 	"""
-	sys.stdout.write('{}\tupdated: {}\texisting: {}\tsample: {}\tflowcell: {}'.format(
+	sys.stdout.write('{}\t\tupdated: {}\texisting: {}\tflowcell: {}\tsample: {}'.format(
 		prefix,
 		updated,
 		existing,
-		sname,
-		fname
+		fname,
+		sname
 	))
 	if terminal:
 		sys.stdout.write('\n')
