@@ -57,7 +57,7 @@ def print_file_status(prefix, updated, existing, sname, fname, terminal=False):
 	:param terminal: BOOL, add line ending
 	:return: None
 	"""
-	sys.stdout.write('{}\t\tupdated: {}\texisting: {}\tflowcell: {}\tsample: {}'.format(
+	sys.stdout.write('{}\tupdated: {}\texisting: {}\tflowcell: {}\tsample: {}'.format(
 		prefix,
 		updated,
 		existing,
@@ -102,10 +102,19 @@ def check_file_match(root_source, root_dest, fq_pass, write_text_log=None):
 				fstatus = 'UPDATED'
 				source_path = os.path.join(this_root, f)
 				dest_path = '{}/{}'.format(root_dest.rstrip('/'), source_path.split(root_source)[-1])
+
 				# Check if exists
 				dest_isfile = os.path.isfile(dest_path)
 				if not dest_isfile:
 					n_updated += 1
+				else:
+					# Check MD5 sum
+					source_md5 = os.system('md5sum {}'.format(source_path))
+					dest_md5 = os.system('md5sum {}'.format(dest_path))
+					print(source_md5, dest_md5)
+					sys.exit()
+
+				# Logging
 				if (n_existing + n_updated) % 5 == 0:
 					print_file_status(stdout_prefix, n_updated, n_existing, samplename, flowcell_id)
 				if log_handle:
