@@ -19,25 +19,26 @@ MINKNOW_REGEX = re.compile(r'[0-9]{8}_[0-9]{4}_[0-9A-Z\-]+_([A-Z]{3}[0-9]+)_')
 OS_WALK_EXCLUDES = {'fast5', 'fast5_pass', 'fast5_fail', 'fastq_fail'}
 
 
-def os_walk_condition(root, s):
+def os_walk_condition(r, s):
 	"""
 	os.walk() is a breadth-first search of directories and files.  This function returns a boolean of whether we want
 	to explore subdirectories or not, since some of these subdirectories (OS_WALK_EXCLUDES) contain many files that
 	take a lot of time to walk.  All branches in the file tree of length greater than 2 whose basedir is in
 	OS_WALK_EXCLUDES are truncated and excluded from further search during the BFS walk.
-	:param root: STR, the root directory path for input/source files
+	:param r: STR, the root directory path for input/source files
 	:param s: STR, path to the directory currently under consideration for next walk (in this breadth level)
 	:return: BOOL, True if include in walk, False otherwise
 	"""
 	status = False
-	root_base = root.split('/')[-1]
-	branch = root_base + '/' + s.split(root)[-1].lstrip('/')
+	root_base = r.split('/')[-1]
+	branch = root_base + '/' + s.split(r)[-1].lstrip('/')
 	branch_split = branch.split('/')
 	if len(branch_split) > 2:
 		if branch_split[-1] not in OS_WALK_EXCLUDES:
 			status = True
 	else:
 		status = True
+	print(status, branch_split)
 	return status
 
 
