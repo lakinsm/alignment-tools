@@ -240,13 +240,13 @@ nb_results = data.table(
   nb2=c(kdomain_nb2, kphylum_nb2, kclass_nb2, korder_nb2, kfamily_nb2, kgenus_nb2, kspecies_nb2),
   lor_ic=c(kdomain_lor_ic, kphylum_lor_ic, kclass_lor_ic, korder_lor_ic, kfamily_lor_ic, kgenus_lor_ic, kspecies_lor_ic)
 )
-print(kdomain_nb)
-print(kphylum_nb)
-print(kclass_nb)
-print(korder_nb)
-print(kfamily_nb)
-print(kgenus_nb)
-print(kspecies_nb)
+# print(kdomain_nb)
+# print(kphylum_nb)
+# print(kclass_nb)
+# print(korder_nb)
+# print(kfamily_nb)
+# print(kgenus_nb)
+# print(kspecies_nb)
 
 
 ### Multinomial Likelihood Classification
@@ -352,17 +352,16 @@ mlc_results = data.table(
   top_match=c(kdomain_ml_top, kphylum_ml_top, kclass_ml_top, korder_ml_top, kfamily_ml_top, kgenus_ml_top, kspecies_ml_top),
   top_prob=c(kdomain_ml1_prob, kphylum_ml1_prob, kclass_ml1_prob, korder_ml1_prob, 
              kfamily_ml1_prob, kgenus_ml1_prob, kspecies_ml1_prob),
-  likelihood_ratio=llr_vec,
-  llrt_pval=pchisq(-2 * llr_vec, df = 1, lower.tail=FALSE)
+  likelihood_ratio=llr_vec
 )
-cat('\n\n')
-print(kdomain_mlprobs)
-print(kphylum_mlprobs)
-print(kclass_mlprobs)
-print(korder_mlprobs)
-print(kfamily_mlprobs)
-print(kgenus_mlprobs)
-print(kspecies_mlprobs)
+# cat('\n\n')
+# print(kdomain_mlprobs)
+# print(kphylum_mlprobs)
+# print(kclass_mlprobs)
+# print(korder_mlprobs)
+# print(kfamily_mlprobs)
+# print(kgenus_mlprobs)
+# print(kspecies_mlprobs)
 
 
 ### Write results from microbiome analysis
@@ -374,7 +373,7 @@ write.csv(kfamily, file=file.path(output_dir, 'microbiome_matrices', 'family.csv
 write.csv(kgenus, file=file.path(output_dir, 'microbiome_matrices', 'genus.csv'), row.names=FALSE)
 write.csv(kspecies, file=file.path(output_dir, 'microbiome_matrices', 'species.csv'), row.names=FALSE)
 
-write.csv(nb_results, file=file.path(output_dir, 'reports', 'naive_bayes_results.csv'), row.names=FALSE)
+# write.csv(nb_results, file=file.path(output_dir, 'reports', 'naive_bayes_results.csv'), row.names=FALSE)
 write.csv(mlc_results, file=file.path(output_dir, 'reports', 'multinomial_likelihood_results.csv'), row.names=FALSE)
 
 
