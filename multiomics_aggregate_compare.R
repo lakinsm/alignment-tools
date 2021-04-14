@@ -386,4 +386,4 @@ write.csv(kspecies, file=file.path(output_dir, 'microbiome_matrices', 'species.c
 # write.csv(nb_results, file=file.path(output_dir, 'reports', 'naive_bayes_results.csv'), row.names=FALSE)
 write.csv(mlc_results, file=file.path(output_dir, 'reports', 'multinomial_likelihood_results.csv'), row.names=FALSE)
 
-print(cbind(korder_target, korder_simplex))
+print(cbind(as.vector(korder_target), korder_simplex))
