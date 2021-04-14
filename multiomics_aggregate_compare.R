@@ -18,7 +18,7 @@ create_working_directories = function(root_dir)
 {
   # If subdirs for stats and exploratory variables don't exist, create them
   ifelse(!dir.exists(file.path(root_dir)),
-         dir.create(file.path(graph_output_dir), mode='777'), FALSE)
+         dir.create(file.path(root_dir), mode='777'), FALSE)
   ifelse(!dir.exists(file.path(root_dir, 'microbiome_matrices')),
          dir.create(file.path(root_dir, 'microbiome_matrices'), mode='777'), FALSE)
   ifelse(!dir.exists(file.path(root_dir, 'reports')),
