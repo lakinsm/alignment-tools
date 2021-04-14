@@ -263,6 +263,7 @@ exact_log_limit = function(theta, n)
 dm_marginal_log_likelihood = function(qvec, X)
 {
   # this_X = X + eps
+  this_X = X
   log_marginal_probs = c()
   for(c in 1:ncol(X)) {
     tvec = this_X[, c]
