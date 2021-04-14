@@ -355,12 +355,13 @@ custom_aic2 = function(ll, K, n)
 llr_vec = c(kdomain_llr, kphylum_llr, kclass_llr, korder_llr, kfamily_llr, kgenus_llr, kspecies_llr)
 top_prob_vec = c(kdomain_ml1_prob, kphylum_ml1_prob, kclass_ml1_prob, korder_ml1_prob, 
                  kfamily_ml1_prob, kgenus_ml1_prob, kspecies_ml1_prob)
+param_counts = c(nrow(kdomain), nrow(kphylum), nrow(kclass), nrow(korder), nrow(kfamily), nrow(kgenus), nrow(kspecies))
 mlc_results = data.table(
   taxon_level=c('Domain', 'Phylum', 'Class', 'Order', 'Family', 'Genus', 'Species'),
   top_match=c(kdomain_ml_top, kphylum_ml_top, kclass_ml_top, korder_ml_top, kfamily_ml_top, kgenus_ml_top, kspecies_ml_top),
   top_prob=top_prob_vec,
   likelihood_ratio=llr_vec,
-  aic=custom_aic2(top_prob_vec)
+  aic=custom_aic2(top_prob_vec, param_counts, 1)
 )
 
 # cat('\n\n')
