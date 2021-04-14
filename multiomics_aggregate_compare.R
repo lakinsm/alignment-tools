@@ -346,12 +346,14 @@ kspecies_ml2_idx = which(kspecies_mlprobs == kspecies_ml2_prob)
 kspecies_llr = kspecies_ml1_prob - kspecies_ml2_prob
 
 # Aggregate
+llr_vec = c(kdomain_llr, kphylum_llr, kclass_llr, korder_llr, kfamily_llr, kgenus_llr, kspecies_llr)
 mlc_results = data.table(
   taxon_level=c('Domain', 'Phylum', 'Class', 'Order', 'Family', 'Genus', 'Species'),
   top_match=c(kdomain_ml_top, kphylum_ml_top, kclass_ml_top, korder_ml_top, kfamily_ml_top, kgenus_ml_top, kspecies_ml_top),
   top_prob=c(kdomain_ml1_prob, kphylum_ml1_prob, kclass_ml1_prob, korder_ml1_prob, 
              kfamily_ml1_prob, kgenus_ml1_prob, kspecies_ml1_prob),
-  likelihood_ratio=c(kdomain_llr, kphylum_llr, kclass_llr, korder_llr, kfamily_llr, kgenus_llr, kspecies_llr)
+  likelihood_ratio=llr_vec,
+  llrt_pval=pchisq(-2 * llr_vec, df = 1, lower.tail=FALSE)
 )
 cat('\n\n')
 print(kdomain_mlprobs)
