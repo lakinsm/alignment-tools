@@ -29,7 +29,7 @@ create_working_directories = function(root_dir)
 
 create_working_directories(output_dir)
 
-eps = 0.0000000001
+eps = 1
 
 kraken = read.csv(kraken_fpath, header=T)
 kmat = data.table(kraken)
