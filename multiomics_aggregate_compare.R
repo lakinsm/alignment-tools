@@ -283,46 +283,75 @@ dm_marginal_log_likelihood = function(qvec, X)
 }
 
 kdomain_mlprobs = dm_marginal_log_likelihood(as.vector(kdomain_target), kdomain_simplex)
-kdomain_ml_top_idx = which.max(kdomain_mlprobs)
+kdomain_mlprobs_sort = sort(kdomain_mlprobs, decreasing = TRUE)
+kdomain_ml1_idx = which.max(kdomain_mlprobs)
+kdomain_ml1_prob = kdomain_mlprobs[kdomain_ml_top_idx]
 kdomain_ml_top = colnames(kdomain_simplex)[kdomain_ml_top_idx]
-kdomain_ml_top_prob = kdomain_mlprobs[kdomain_ml_top_idx]
+kdomain_ml2_prob = kdomain_mlprobs_sort[2]
+kdomain_ml2_idx = which(kdomain_mlprobs == kdomain_ml2_prob)
+kdomain_llr = kdomain_ml1_prob - kdomain_ml2_prob
 
 kphylum_mlprobs = dm_marginal_log_likelihood(as.vector(kphylum_target), kphylum_simplex)
-kphylum_ml_top_idx = which.max(kphylum_mlprobs)
+kphylum_mlprobs_sort = sort(kphylum_mlprobs, decreasing = TRUE)
+kphylum_ml1_idx = which.max(kphylum_mlprobs)
+kphylum_ml1_prob = kphylum_mlprobs[kphylum_ml_top_idx]
 kphylum_ml_top = colnames(kphylum_simplex)[kphylum_ml_top_idx]
-kphylum_ml_top_prob = kphylum_mlprobs[kphylum_ml_top_idx]
+kphylum_ml2_prob = kphylum_mlprobs_sort[2]
+kphylum_ml2_idx = which(kphylum_mlprobs == kphylum_ml2_prob)
+kphylum_llr = kphylum_ml1_prob - kphylum_ml2_prob
 
 kclass_mlprobs = dm_marginal_log_likelihood(as.vector(kclass_target), kclass_simplex)
-kclass_ml_top_idx = which.max(kclass_mlprobs)
+kclass_mlprobs_sort = sort(kclass_mlprobs, decreasing = TRUE)
+kclass_ml1_idx = which.max(kclass_mlprobs)
+kclass_ml1_prob = kclass_mlprobs[kclass_ml_top_idx]
 kclass_ml_top = colnames(kclass_simplex)[kclass_ml_top_idx]
-kclass_ml_top_prob = kclass_mlprobs[kclass_ml_top_idx]
+kclass_ml2_prob = kclass_mlprobs_sort[2]
+kclass_ml2_idx = which(kclass_mlprobs == kclass_ml2_prob)
+kclass_llr = kclass_ml1_prob - kclass_ml2_prob
 
 korder_mlprobs = dm_marginal_log_likelihood(as.vector(korder_target), korder_simplex)
-korder_ml_top_idx = which.max(korder_mlprobs)
+korder_mlprobs_sort = sort(korder_mlprobs, decreasing = TRUE)
+korder_ml1_idx = which.max(korder_mlprobs)
+korder_ml1_prob = korder_mlprobs[korder_ml_top_idx]
 korder_ml_top = colnames(korder_simplex)[korder_ml_top_idx]
-korder_ml_top_prob = korder_mlprobs[korder_ml_top_idx]
+korder_ml2_prob = korder_mlprobs_sort[2]
+korder_ml2_idx = which(korder_mlprobs == korder_ml2_prob)
+korder_llr = korder_ml1_prob - korder_ml2_prob
 
 kfamily_mlprobs = dm_marginal_log_likelihood(as.vector(kfamily_target), kfamily_simplex)
-kfamily_ml_top_idx = which.max(kfamily_mlprobs)
+kfamily_mlprobs_sort = sort(kfamily_mlprobs, decreasing = TRUE)
+kfamily_ml1_idx = which.max(kfamily_mlprobs)
+kfamily_ml1_prob = kfamily_mlprobs[kfamily_ml_top_idx]
 kfamily_ml_top = colnames(kfamily_simplex)[kfamily_ml_top_idx]
-kfamily_ml_top_prob = kfamily_mlprobs[kfamily_ml_top_idx]
+kfamily_ml2_prob = kfamily_mlprobs_sort[2]
+kfamily_ml2_idx = which(kfamily_mlprobs == kfamily_ml2_prob)
+kfamily_llr = kfamily_ml1_prob - kfamily_ml2_prob
 
 kgenus_mlprobs = dm_marginal_log_likelihood(as.vector(kgenus_target), kgenus_simplex)
-kgenus_ml_top_idx = which.max(kgenus_mlprobs)
+kgenus_mlprobs_sort = sort(kgenus_mlprobs, decreasing = TRUE)
+kgenus_ml1_idx = which.max(kgenus_mlprobs)
+kgenus_ml1_prob = kgenus_mlprobs[kgenus_ml_top_idx]
 kgenus_ml_top = colnames(kgenus_simplex)[kgenus_ml_top_idx]
-kgenus_ml_top_prob = kgenus_mlprobs[kgenus_ml_top_idx]
+kgenus_ml2_prob = kgenus_mlprobs_sort[2]
+kgenus_ml2_idx = which(kgenus_mlprobs == kgenus_ml2_prob)
+kgenus_llr = kgenus_ml1_prob - kgenus_ml2_prob
 
 kspecies_mlprobs = dm_marginal_log_likelihood(as.vector(kspecies_target), kspecies_simplex)
-kspecies_ml_top_idx = which.max(kspecies_mlprobs)
+kspecies_mlprobs_sort = sort(kspecies_mlprobs, decreasing = TRUE)
+kspecies_ml1_idx = which.max(kspecies_mlprobs)
+kspecies_ml1_prob = kspecies_mlprobs[kspecies_ml_top_idx]
 kspecies_ml_top = colnames(kspecies_simplex)[kspecies_ml_top_idx]
-kspecies_ml_top_prob = kspecies_mlprobs[kspecies_ml_top_idx]
+kspecies_ml2_prob = kspecies_mlprobs_sort[2]
+kspecies_ml2_idx = which(kspecies_mlprobs == kspecies_ml2_prob)
+kspecies_llr = kspecies_ml1_prob - kspecies_ml2_prob
 
 # Aggregate
 mlc_results = data.table(
   taxon_level=c('Domain', 'Phylum', 'Class', 'Order', 'Family', 'Genus', 'Species'),
   top_match=c(kdomain_ml_top, kphylum_ml_top, kclass_ml_top, korder_ml_top, kfamily_ml_top, kgenus_ml_top, kspecies_ml_top),
-  top_prob=c(kdomain_ml_top_prob, kphylum_ml_top_prob, kclass_ml_top_prob, 
-             korder_ml_top_prob, kfamily_ml_top_prob, kgenus_ml_top_prob, kspecies_ml_top_prob)
+  top_prob=c(kdomain_ml1_prob, kphylum_ml1_prob, kclass_ml1_prob, korder_ml1_prob, 
+             kfamily_ml1_prob, kgenus_ml1_prob, kspecies_ml1_prob),
+  likelihood_ratio=c(kdomain_llr, kphylum_llr, kclass_llr, korder_llr, kfamily_llr, kgenus_llr, kspecies_llr)
 )
 cat('\n\n')
 print(kdomain_mlprobs)
