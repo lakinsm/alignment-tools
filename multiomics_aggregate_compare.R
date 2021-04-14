@@ -561,26 +561,26 @@ nmds.proj = rbind(domain.nmds.proj, phylum.nmds.proj, class.nmds.proj, order.nmd
 #                   genus.tsne.proj, species.tsne.proj)
 
 # Plot
-basesize = 32
-ptsize = 4
-
-g_pca = ggplot(pca.proj, aes(x=PC1, y=PC2, color=samples)) +
-  geom_point(size=ptsize) +
-  facet_wrap(~taxonomy_level, nrow=2) +
-  custom_theme_legend(base_size = basesize)
-
-g_nmds = ggplot(nmds.proj, aes(x=MDS1, y=MDS2, color=samples)) +
-  geom_point(size=ptsize) +
-  facet_wrap(~taxonomy_level, nrow=2) +
-  custom_theme_legend(base_size = basesize)
-
-png(file.path(output_dir, 'graphs', 'microbiome_pca_multi_ordination.png'), width=3200, height=2000)
-print(g_pca)
-dev.off()
-
-png(file.path(output_dir, 'graphs', 'microbiome_nmds_multi_ordination.png'), width=3200, height=2000)
-print(g_nmds)
-dev.off()
+# basesize = 32
+# ptsize = 4
+# 
+# g_pca = ggplot(pca.proj, aes(x=PC1, y=PC2, color=samples)) +
+#   geom_point(size=ptsize) +
+#   facet_wrap(~taxonomy_level, nrow=2) +
+#   custom_theme_legend(base_size = basesize)
+# 
+# g_nmds = ggplot(nmds.proj, aes(x=MDS1, y=MDS2, color=samples)) +
+#   geom_point(size=ptsize) +
+#   facet_wrap(~taxonomy_level, nrow=2) +
+#   custom_theme_legend(base_size = basesize)
+# 
+# png(file.path(output_dir, 'graphs', 'microbiome_pca_multi_ordination.png'), width=3200, height=2000)
+# print(g_pca)
+# dev.off()
+# 
+# png(file.path(output_dir, 'graphs', 'microbiome_nmds_multi_ordination.png'), width=3200, height=2000)
+# print(g_nmds)
+# dev.off()
 
 
 ### Write results from microbiome analysis
@@ -609,5 +609,7 @@ write.csv(cbind(as.vector(kspecies_target), kspecies_simplex),
 
 # write.csv(nb_results, file=file.path(output_dir, 'reports', 'naive_bayes_results.csv'), row.names=FALSE)
 write.csv(mlc_results, file=file.path(output_dir, 'reports', 'multinomial_likelihood_results.csv'), row.names=FALSE)
+write.csv(pca.proj, file=file.path(output_dir, 'graphs', 'microbiome_pca_multiordination.csv'), row.names=FALSE)
+write.csv(nmds.proj, file=file.path(output_dir, 'graphs', 'microbiome_nmds_multiordination.csv'), row.names=FALSE)
 
 
