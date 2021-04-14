@@ -8,7 +8,7 @@ library(grid)
 library(tsne)
 
 set.seed(2718)
-options(echo=FALSE)
+options(echo=FALSE, bitmapType='cairo')
 
 
 custom_theme_nolegend = function (base_size = 14, base_family = 'sans', base_line_size = base_size/22, 
