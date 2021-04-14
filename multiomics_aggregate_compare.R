@@ -240,6 +240,13 @@ nb_results = data.table(
   nb2=c(kdomain_nb2, kphylum_nb2, kclass_nb2, korder_nb2, kfamily_nb2, kgenus_nb2, kspecies_nb2),
   lor_ic=c(kdomain_lor_ic, kphylum_lor_ic, kclass_lor_ic, korder_lor_ic, kfamily_lor_ic, kgenus_lor_ic, kspecies_lor_ic)
 )
+cat(print(kdomain_nb))
+cat(print(kphylum_nb))
+cat(print(kclass_nb))
+cat(print(korder_nb))
+cat(print(kfamily_nb))
+cat(print(kgenus_nb))
+cat(print(kspecies_nb))
 
 
 ### Multinomial Likelihood Classification
@@ -316,6 +323,15 @@ mlc_results = data.table(
   top_prob=c(kdomain_ml_top_prob, kphylum_ml_top_prob, kclass_ml_top_prob, 
              korder_ml_top_prob, kfamily_ml_top_prob, kgenus_ml_top_prob, kspecies_ml_top_prob)
 )
+cat('\n\n')
+cat(print(kdomain_mlprobs))
+cat(print(kphylum_mlprobs))
+cat(print(kclass_mlprobs))
+cat(print(korder_mlprobs))
+cat(print(kfamily_mlprobs))
+cat(print(kgenus_mlprobs))
+cat(print(kspecies_mlprobs))
+
 
 ### Write results from microbiome analysis
 write.csv(kdomain, file=file.path(output_dir, 'microbiome_matrices', 'domain.csv'), row.names=FALSE)
