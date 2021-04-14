@@ -3,8 +3,42 @@
 library(data.table)
 library(ggplot2)
 library(omicsPrint)
+library(vegan)
+library(grid)
+library(tsne)
 
+set.seed(2718)
 options(echo=FALSE)
+
+
+custom_theme_nolegend = function (base_size = 14, base_family = 'sans', base_line_size = base_size/22, 
+                                  base_rect_size = base_size/22) 
+{
+  theme_grey(base_size = base_size, base_family = base_family, 
+             base_line_size = base_line_size, base_rect_size = base_rect_size) %+replace% 
+    theme(
+      panel.background = element_rect(fill = "white", colour = NA), 
+      panel.border = element_rect(fill = NA, colour = "grey20"), 
+      panel.grid = element_line(colour = "grey92"), 
+      panel.grid.minor = element_line(size = rel(0.5)), 
+      strip.background = element_rect(fill = "grey85", colour = "grey20"), 
+      legend.key = element_rect(fill = "white", colour = NA), 
+      plot.title=element_text(hjust=0.5, vjust=2),
+      legend.position='None',
+      plot.margin = unit(rep(0.5, 4), "cm"),
+      complete = TRUE
+    )
+}
+
+custom_theme_legend = function(base_size=14, base_family='sans')
+{
+  custom_theme_nolegend(base_size = base_size, base_family=base_family) %+replace%
+    theme(
+      legend.position='right',
+      legend.text=element_text(size=rel(0.8))
+    )
+}
+
 
 # 1. kraken_analytic_matrix.csv, 2. host_vcf_table.tsv, 3. viral_vcf_table.tsv, 4. target_sample_name, 5. out_dir
 args = commandArgs(trailingOnly = TRUE)
@@ -21,6 +55,8 @@ create_working_directories = function(root_dir)
          dir.create(file.path(root_dir), mode='777'), FALSE)
   ifelse(!dir.exists(file.path(root_dir, 'microbiome_matrices')),
          dir.create(file.path(root_dir, 'microbiome_matrices'), mode='777'), FALSE)
+  ifelse(!dir.exists(file.path(root_dir, 'microbiome_simplex_matrices')),
+         dir.create(file.path(root_dir, 'microbiome_simplex_matrices'), mode='777'), FALSE)
   ifelse(!dir.exists(file.path(root_dir, 'reports')),
          dir.create(file.path(root_dir, 'reports'), mode='777'), FALSE)
   ifelse(!dir.exists(file.path(root_dir, 'graphs')),
@@ -374,6 +410,179 @@ mlc_results = data.table(
 # print(kspecies_mlprobs)
 
 
+## Ordination on simplex
+
+# Domain
+kdomain_ord = kdomain[, .SD, .SDcols=!'Domain']
+kdomain_ord = t(apply(kdomain_ord, 2, function(x) x / sum(x)))
+
+domain.pca.res = prcomp(kdomain_ord)
+domain.pca.proj = data.table(scale(kdomain_ord, domain.pca.res$center, domain.pca.res$scale) %*% domain.pca.res$rotation[, 1:2])
+domain.pca.proj[, samples := colnames(kdomain)[2:ncol(kdomain)]]
+domain.pca.proj[, taxonomy_level := rep('Domain', nrow(domain.pca.proj))]
+
+domain.nmds.res = metaMDS(kdomain_ord, k=2, try=50, trymax=100)
+domain.nmds.proj = data.table(domain.nmds.res$points)
+domain.nmds.proj[, samples := colnames(kdomain)[2:ncol(kdomain)]]
+domain.nmds.proj[, taxonomy_level := rep('Domain', nrow(domain.nmds.proj))]
+
+# domain.tsne.res = tsne(kdomain_ord, k=2, perplexity=30, max_iter=1000, epoch=500)
+# domain.tsne.proj = data.table(domain.tsne.res)
+# domain.tsne.proj[, samples := colnames(kdomain)[2:ncol(kdomain)]]
+# domain.tsne.proj[, taxonomy_level := rep('Domain', nrow(domain.tsne.proj))]
+
+
+# Phylum
+kphylum_ord = kphylum[, .SD, .SDcols=!'Phylum']
+kphylum_ord = t(apply(kphylum_ord, 2, function(x) x / sum(x)))
+
+phylum.pca.res = prcomp(kphylum_ord)
+phylum.pca.proj = data.table(scale(kphylum_ord, phylum.pca.res$center, phylum.pca.res$scale) %*% phylum.pca.res$rotation[, 1:2])
+phylum.pca.proj[, samples := colnames(kphylum)[2:ncol(kphylum)]]
+phylum.pca.proj[, taxonomy_level := rep('Phylum', nrow(phylum.pca.proj))]
+
+phylum.nmds.res = metaMDS(kphylum_ord, k=2, try=50, trymax=100)
+phylum.nmds.proj = data.table(phylum.nmds.res$points)
+phylum.nmds.proj[, samples := colnames(kphylum)[2:ncol(kphylum)]]
+phylum.nmds.proj[, taxonomy_level := rep('Phylum', nrow(phylum.nmds.proj))]
+
+# phylum.tsne.res = tsne(kphylum_ord, k=2, perplexity=30, max_iter=1000, epoch=500)
+# phylum.tsne.proj = data.table(phylum.tsne.res)
+# phylum.tsne.proj[, samples := colnames(kphylum)[2:ncol(kphylum)]]
+# phylum.tsne.proj[, taxonomy_level := rep('Phylum', nrow(phylum.tsne.proj))]
+
+
+# Class
+kclass_ord = kclass[, .SD, .SDcols=!'Class']
+kclass_ord = t(apply(kclass_ord, 2, function(x) x / sum(x)))
+
+class.pca.res = prcomp(kclass_ord)
+class.pca.proj = data.table(scale(kclass_ord, class.pca.res$center, class.pca.res$scale) %*% class.pca.res$rotation[, 1:2])
+class.pca.proj[, samples := colnames(kclass)[2:ncol(kclass)]]
+class.pca.proj[, taxonomy_level := rep('Class', nrow(class.pca.proj))]
+
+class.nmds.res = metaMDS(kclass_ord, k=2, try=50, trymax=100)
+class.nmds.proj = data.table(class.nmds.res$points)
+class.nmds.proj[, samples := colnames(kclass)[2:ncol(kclass)]]
+class.nmds.proj[, taxonomy_level := rep('Class', nrow(class.nmds.proj))]
+
+# class.tsne.res = tsne(kclass_ord, k=2, perplexity=30, max_iter=1000, epoch=500)
+# class.tsne.proj = data.table(class.tsne.res)
+# class.tsne.proj[, samples := colnames(kclass)[2:ncol(kclass)]]
+# class.tsne.proj[, taxonomy_level := rep('Class', nrow(class.tsne.proj))]
+
+
+# Order
+korder_ord = korder[, .SD, .SDcols=!'Order']
+korder_ord = t(apply(korder_ord, 2, function(x) x / sum(x)))
+
+order.pca.res = prcomp(korder_ord)
+order.pca.proj = data.table(scale(korder_ord, order.pca.res$center, order.pca.res$scale) %*% order.pca.res$rotation[, 1:2])
+order.pca.proj[, samples := colnames(korder)[2:ncol(korder)]]
+order.pca.proj[, taxonomy_level := rep('Order', nrow(order.pca.proj))]
+
+order.nmds.res = metaMDS(korder_ord, k=2, try=50, trymax=100)
+order.nmds.proj = data.table(order.nmds.res$points)
+order.nmds.proj[, samples := colnames(korder)[2:ncol(korder)]]
+order.nmds.proj[, taxonomy_level := rep('Order', nrow(order.nmds.proj))]
+
+# order.tsne.res = tsne(korder_ord, k=2, perplexity=30, max_iter=1000, epoch=500)
+# order.tsne.proj = data.table(order.tsne.res)
+# order.tsne.proj[, samples := colnames(korder)[2:ncol(korder)]]
+# order.tsne.proj[, taxonomy_level := rep('Order', nrow(order.tsne.proj))]
+# 
+
+# Family
+kfamily_ord = kfamily[, .SD, .SDcols=!'Family']
+kfamily_ord = t(apply(kfamily_ord, 2, function(x) x / sum(x)))
+
+family.pca.res = prcomp(kfamily_ord)
+family.pca.proj = data.table(scale(kfamily_ord, family.pca.res$center, family.pca.res$scale) %*% family.pca.res$rotation[, 1:2])
+family.pca.proj[, samples := colnames(kfamily)[2:ncol(kfamily)]]
+family.pca.proj[, taxonomy_level := rep('Family', nrow(family.pca.proj))]
+
+family.nmds.res = metaMDS(kfamily_ord, k=2, try=50, trymax=100)
+family.nmds.proj = data.table(family.nmds.res$points)
+family.nmds.proj[, samples := colnames(kfamily)[2:ncol(kfamily)]]
+family.nmds.proj[, taxonomy_level := rep('Family', nrow(family.nmds.proj))]
+# 
+# family.tsne.res = tsne(kfamily_ord, k=2, perplexity=30, max_iter=1000, epoch=500)
+# family.tsne.proj = data.table(family.tsne.res)
+# family.tsne.proj[, samples := colnames(kfamily)[2:ncol(kfamily)]]
+# family.tsne.proj[, taxonomy_level := rep('Family', nrow(family.tsne.proj))]
+
+
+# Genus
+kgenus_ord = kgenus[, .SD, .SDcols=!'Genus']
+kgenus_ord = t(apply(kgenus_ord, 2, function(x) x / sum(x)))
+
+genus.pca.res = prcomp(kgenus_ord)
+genus.pca.proj = data.table(scale(kgenus_ord, genus.pca.res$center, genus.pca.res$scale) %*% genus.pca.res$rotation[, 1:2])
+genus.pca.proj[, samples := colnames(kgenus)[2:ncol(kgenus)]]
+genus.pca.proj[, taxonomy_level := rep('Genus', nrow(genus.pca.proj))]
+
+genus.nmds.res = metaMDS(kgenus_ord, k=2, try=50, trymax=100)
+genus.nmds.proj = data.table(genus.nmds.res$points)
+genus.nmds.proj[, samples := colnames(kgenus)[2:ncol(kgenus)]]
+genus.nmds.proj[, taxonomy_level := rep('Genus', nrow(genus.nmds.proj))]
+
+# genus.tsne.res = tsne(kgenus_ord, k=2, perplexity=30, max_iter=1000, epoch=500)
+# genus.tsne.proj = data.table(genus.tsne.res)
+# genus.tsne.proj[, samples := colnames(kgenus)[2:ncol(kgenus)]]
+# genus.tsne.proj[, taxonomy_level := rep('Genus', nrow(genus.tsne.proj))]
+
+
+# Species
+kspecies_ord = kspecies[, .SD, .SDcols=!'Species']
+kspecies_ord = t(apply(kspecies_ord, 2, function(x) x / sum(x)))
+
+species.pca.res = prcomp(kspecies_ord)
+species.pca.proj = data.table(scale(kspecies_ord, species.pca.res$center, species.pca.res$scale) %*% species.pca.res$rotation[, 1:2])
+species.pca.proj[, samples := colnames(kspecies)[2:ncol(kspecies)]]
+species.pca.proj[, taxonomy_level := rep('Species', nrow(species.pca.proj))]
+
+species.nmds.res = metaMDS(kspecies_ord, k=2, try=50, trymax=100)
+species.nmds.proj = data.table(species.nmds.res$points)
+species.nmds.proj[, samples := colnames(kspecies)[2:ncol(kspecies)]]
+species.nmds.proj[, taxonomy_level := rep('Species', nrow(species.nmds.proj))]
+# 
+# species.tsne.res = tsne(kspecies_ord, k=2, perplexity=30, max_iter=1000, epoch=500)
+# species.tsne.proj = data.table(species.tsne.res)
+# species.tsne.proj[, samples := colnames(kspecies)[2:ncol(kspecies)]]
+# species.tsne.proj[, taxonomy_level := rep('Species', nrow(species.tsne.proj))]
+
+
+# Aggregate
+pca.proj = rbind(domain.pca.proj, phylum.pca.proj, class.pca.proj, order.pca.proj, family.pca.proj,
+                 genus.pca.proj, species.pca.proj)
+nmds.proj = rbind(domain.nmds.proj, phylum.nmds.proj, class.nmds.proj, order.nmds.proj, family.nmds.proj,
+                  genus.nmds.proj, species.nmds.proj)
+# tsne.proj = rbind(domain.tsne.proj, phylum.tsne.proj, class.tsne.proj, order.tsne.proj, family.tsne.proj,
+#                   genus.tsne.proj, species.tsne.proj)
+
+# Plot
+basesize = 32
+ptsize = 4
+
+g_pca = ggplot(pca.proj, aes(x=PC1, y=PC2, color=samples)) +
+  geom_point(size=ptsize) +
+  facet_wrap(~taxonomy_level, nrow=2) +
+  custom_theme_legend(base_size = basesize)
+
+g_nmds = ggplot(nmds.proj, aes(x=MDS1, y=MDS2, color=samples)) +
+  geom_point(size=ptsize) +
+  facet_wrap(~taxonomy_level, nrow=2) +
+  custom_theme_legend(base_size = basesize)
+
+png(file.path(output_dir, 'graphs', 'microbiome_pca_multi_ordination.png'), width=3200, height=2000)
+print(g_pca)
+dev.off()
+
+png(file.path(output_dir, 'graphs', 'microbiome_nmds_multi_ordination.png'), width=3200, height=2000)
+print(g_nmds)
+dev.off()
+
+
 ### Write results from microbiome analysis
 write.csv(kdomain, file=file.path(output_dir, 'microbiome_matrices', 'domain.csv'), row.names=FALSE)
 write.csv(kphylum, file=file.path(output_dir, 'microbiome_matrices', 'phylum.csv'), row.names=FALSE)
@@ -383,7 +592,22 @@ write.csv(kfamily, file=file.path(output_dir, 'microbiome_matrices', 'family.csv
 write.csv(kgenus, file=file.path(output_dir, 'microbiome_matrices', 'genus.csv'), row.names=FALSE)
 write.csv(kspecies, file=file.path(output_dir, 'microbiome_matrices', 'species.csv'), row.names=FALSE)
 
+write.csv(cbind(as.vector(kdomain_target), kdomain_simplex), 
+          file=file.path(output_dir, 'microbiome_simplex_matrices', 'domain.csv'), row.names=F)
+write.csv(cbind(as.vector(kphylum_target), kphylum_simplex), 
+          file=file.path(output_dir, 'microbiome_simplex_matrices', 'phylum.csv'), row.names=F)
+write.csv(cbind(as.vector(kclass_target), kclass_simplex), 
+          file=file.path(output_dir, 'microbiome_simplex_matrices', 'class.csv'), row.names=F)
+write.csv(cbind(as.vector(korder_target), korder_simplex), 
+          file=file.path(output_dir, 'microbiome_simplex_matrices', 'order.csv'), row.names=F)
+write.csv(cbind(as.vector(kfamily_target), kfamily_simplex), 
+          file=file.path(output_dir, 'microbiome_simplex_matrices', 'family.csv'), row.names=F)
+write.csv(cbind(as.vector(kgenus_target), kgenus_simplex), 
+          file=file.path(output_dir, 'microbiome_simplex_matrices', 'genus.csv'), row.names=F)
+write.csv(cbind(as.vector(kspecies_target), kspecies_simplex), 
+          file=file.path(output_dir, 'microbiome_simplex_matrices', 'species.csv'), row.names=F)
+
 # write.csv(nb_results, file=file.path(output_dir, 'reports', 'naive_bayes_results.csv'), row.names=FALSE)
 write.csv(mlc_results, file=file.path(output_dir, 'reports', 'multinomial_likelihood_results.csv'), row.names=FALSE)
 
-print(cbind(as.vector(korder_target), korder_simplex))
+
