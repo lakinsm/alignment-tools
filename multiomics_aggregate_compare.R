@@ -643,7 +643,7 @@ for(i in 1:length(host_match_perc)) {
                           ))
 }
 
-
+sig_thresh = 0.1
 
 virus_omics_x = data.frame(virus_target)
 colnames(virus_omics_x) = target
@@ -655,11 +655,13 @@ rownames(virus_omics_y) = virus[['VariantID']]
 
 virus_omics_all = cbind(virus_omics_x, virus_omics_y)
 
-virus_omics_res = alleleSharing(virus_omics_all)
+virus_omics_res = alleleSharing(virus_omics_all, alpha=sig_thresh)
 print(virus_omics_res)
 
 cat('\n\n')
 
+print(host)
+print(host[['VariantID']][duplicated(host[['VariantID']])])
 
 host_omics_x = data.frame(host_target)
 colnames(host_omics_x) = target
@@ -671,7 +673,7 @@ rownames(host_omics_y) = host[['VariantID']]
 
 host_omics_all = cbind(host_omics_x, host_omics_y)
 
-host_omics_res = alleleSharing(host_omics_all)
+host_omics_res = alleleSharing(host_omics_all, alpha=sig_thresh)
 print(host_omics_res)
 
 
