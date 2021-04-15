@@ -661,7 +661,8 @@ virus_omics_all = cbind(virus_omics_x, virus_omics_y)
 
 virus_omics_res = alleleSharing(virus_omics_all, alpha=sig_thresh)
 print(virus_omics_res)
-
+virus_omics_rel = inferRelations(virus_omics_res, plot.it=FALSE)
+print(virus_omics_rel)
 cat('\n\n')
 
 
@@ -678,6 +679,8 @@ host_omics_all = cbind(host_omics_x, host_omics_y)
 
 host_omics_res = alleleSharing(host_omics_all, alpha=sig_thresh)
 print(host_omics_res)
+host_omics_rel = inferRelations(host_omics_res, plot.it=FALSE)
+print(host_omics_rel)
 
 
 
