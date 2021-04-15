@@ -604,7 +604,7 @@ virus_target = virus[[`target`]]
 virus_match_perc = c()
 virus_mismatch_perc = c()
 for(i in 1:ncol(virus_compare)) {
-  virus_match_perc[i] = 100 * sum(virus_target == virus_compare[, i]) / nrow(virus)
+  virus_match_perc[i] = 100 * sum(virus_target == virus_compare[, ..i]) / nrow(virus)
   virus_mismatch_perc[i] = 100 - virus_match_perc[i]
 }
 
