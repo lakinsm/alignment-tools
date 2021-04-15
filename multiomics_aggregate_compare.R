@@ -13,8 +13,8 @@ options(echo=FALSE)
 # 1. kraken_analytic_matrix.csv, 2. host_vcf_table.tsv, 3. viral_vcf_table.tsv, 4. target_sample_name, 5. out_dir
 args = commandArgs(trailingOnly = TRUE)
 kraken_fpath = args[1]
-host_vcf_fpath = args[2]
-viral_vcf_fpath = args[3]
+host_var_fpath = args[2]
+viral_var_fpath = args[3]
 target = args[4]
 output_dir = args[5]
 
@@ -563,23 +563,112 @@ write.csv(kgenus, file=file.path(output_dir, 'microbiome_matrices', 'genus.csv')
 write.csv(kspecies, file=file.path(output_dir, 'microbiome_matrices', 'species.csv'), row.names=FALSE)
 
 write.csv(cbind(as.vector(kdomain_target), kdomain_simplex), 
-          file=file.path(output_dir, 'microbiome_simplex_matrices', 'domain.csv'), row.names=F)
+          file=file.path(output_dir, 'microbiome_simplex_matrices', 'domain.csv'), row.names=FALSE)
 write.csv(cbind(as.vector(kphylum_target), kphylum_simplex), 
-          file=file.path(output_dir, 'microbiome_simplex_matrices', 'phylum.csv'), row.names=F)
+          file=file.path(output_dir, 'microbiome_simplex_matrices', 'phylum.csv'), row.names=FALSE)
 write.csv(cbind(as.vector(kclass_target), kclass_simplex), 
-          file=file.path(output_dir, 'microbiome_simplex_matrices', 'class.csv'), row.names=F)
+          file=file.path(output_dir, 'microbiome_simplex_matrices', 'class.csv'), row.names=FALSE)
 write.csv(cbind(as.vector(korder_target), korder_simplex), 
-          file=file.path(output_dir, 'microbiome_simplex_matrices', 'order.csv'), row.names=F)
+          file=file.path(output_dir, 'microbiome_simplex_matrices', 'order.csv'), row.names=FALSE)
 write.csv(cbind(as.vector(kfamily_target), kfamily_simplex), 
-          file=file.path(output_dir, 'microbiome_simplex_matrices', 'family.csv'), row.names=F)
+          file=file.path(output_dir, 'microbiome_simplex_matrices', 'family.csv'), row.names=FALSE)
 write.csv(cbind(as.vector(kgenus_target), kgenus_simplex), 
-          file=file.path(output_dir, 'microbiome_simplex_matrices', 'genus.csv'), row.names=F)
+          file=file.path(output_dir, 'microbiome_simplex_matrices', 'genus.csv'), row.names=FALSE)
 write.csv(cbind(as.vector(kspecies_target), kspecies_simplex), 
-          file=file.path(output_dir, 'microbiome_simplex_matrices', 'species.csv'), row.names=F)
+          file=file.path(output_dir, 'microbiome_simplex_matrices', 'species.csv'), row.names=FALSE)
 
 # write.csv(nb_results, file=file.path(output_dir, 'reports', 'naive_bayes_results.csv'), row.names=FALSE)
 write.csv(mlc_results, file=file.path(output_dir, 'reports', 'multinomial_likelihood_results.csv'), row.names=FALSE)
 # write.csv(pca.proj, file=file.path(output_dir, 'graphs', 'microbiome_pca_multiordination.csv'), row.names=FALSE)
 # write.csv(nmds.proj, file=file.path(output_dir, 'graphs', 'microbiome_nmds_multiordination.csv'), row.names=FALSE)
+
+
+
+
+### Fingerprinting analysis
+virus = data.table(read.csv(viral_var_fpath, stringsAsFactors = FALSE, header=TRUE))
+host = data.table(read.csv(host_var_fpath, stringsAsFactors = FALSE, header=TRUE))
+
+fingerprint_res = data.table(
+  sample=character(),
+  data_type=character(),
+  analysis=character(),
+  top_match=character(),
+  value=numeric()
+)
+
+virus_compare = copy(virus)
+virus_compare[, VariantID := NULL]
+virus_compare[, eval(target) := NULL]
+virus_target = virus[[`target`]]
+virus_match_perc = c()
+virus_mismatch_perc = c()
+for(i in 1:ncol(virus_compare)) {
+  virus_match_perc[i] = 100 * sum(virus_target == virus_compare[, i]) / nrow(virus)
+  virus_mismatch_perc[i] = 100 - virus_match_perc[i]
+}
+
+for(i in 1:length(virus_match_perc)) {
+  fingerprint_res = rbind(fingerprint_res,
+                          data.table(
+                            sample=colnames(virus_compare)[i],
+                            data_type='Virus',
+                            analysis='% Concordance',
+                            top_match=colnames(virus_compare)[which.max(virus_match_perc)],
+                            value=max(virus_match_perc)
+                          ))
+}
+
+
+
+host_compare = copy(host)
+host_compare[, VariantID := NULL]
+host_compare[, eval(target) := NULL]
+host_target = host[[`target`]]
+host_match_perc = c()
+host_mismatch_perc = c()
+for(i in 1:ncol(host_compare)) {
+  host_match_perc[i] = 100 * sum(host_target == host_compare[, i]) / nrow(host)
+  host_mismatch_perc[i] = 100 - host_match_perc[i]
+}
+
+for(i in 1:length(host_match_perc)) {
+  fingerprint_res = rbind(fingerprint_res,
+                          data.table(
+                            sample=colnames(host_compare)[i],
+                            data_type='Host',
+                            analysis='% Concordance',
+                            top_match=colnames(host_compare)[which.max(host_match_perc)],
+                            value=max(host_match_perc)
+                          ))
+}
+
+
+
+virus_omics_x = data.frame(virus_target)
+colnames(virus_omics_x) = target
+rownames(virus_omics_x) = virus[['VariantID']]
+
+virus_omics_y = data.frame(virus_compare)
+colnames(virus_omics_y) = colnames(virus_compare)
+rownames(virus_omics_y) = virus[['VariantID']]
+
+virus_omics_res = alleleSharing(virus_omics_x, virus_omics_y)
+print(virus_omics_res)
+
+cat('\n\n')
+
+
+host_omics_x = data.frame(host_target)
+colnames(host_omics_x) = target
+rownames(host_omics_x) = host[['VariantID']]
+
+host_omics_y = data.frame(host_compare)
+colnames(host_omics_y) = colnames(host_compare)
+rownames(host_omics_y) = host[['VariantID']]
+
+host_omics_res = alleleSharing(host_omics_x, host_omics_y)
+print(host_omics_res)
+
 
 
