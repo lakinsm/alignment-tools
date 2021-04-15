@@ -8,37 +8,7 @@ library(grid)
 library(tsne)
 
 set.seed(2718)
-options(echo=FALSE, bitmapType='cairo')
-
-
-custom_theme_nolegend = function (base_size = 14, base_family = 'sans', base_line_size = base_size/22, 
-                                  base_rect_size = base_size/22) 
-{
-  theme_grey(base_size = base_size, base_family = base_family, 
-             base_line_size = base_line_size, base_rect_size = base_rect_size) %+replace% 
-    theme(
-      panel.background = element_rect(fill = "white", colour = NA), 
-      panel.border = element_rect(fill = NA, colour = "grey20"), 
-      panel.grid = element_line(colour = "grey92"), 
-      panel.grid.minor = element_line(size = rel(0.5)), 
-      strip.background = element_rect(fill = "grey85", colour = "grey20"), 
-      legend.key = element_rect(fill = "white", colour = NA), 
-      plot.title=element_text(hjust=0.5, vjust=2),
-      legend.position='None',
-      plot.margin = unit(rep(0.5, 4), "cm"),
-      complete = TRUE
-    )
-}
-
-custom_theme_legend = function(base_size=14, base_family='sans')
-{
-  custom_theme_nolegend(base_size = base_size, base_family=base_family) %+replace%
-    theme(
-      legend.position='right',
-      legend.text=element_text(size=rel(0.8))
-    )
-}
-
+options(echo=FALSE)
 
 # 1. kraken_analytic_matrix.csv, 2. host_vcf_table.tsv, 3. viral_vcf_table.tsv, 4. target_sample_name, 5. out_dir
 args = commandArgs(trailingOnly = TRUE)
