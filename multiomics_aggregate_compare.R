@@ -643,7 +643,7 @@ for(i in 1:length(host_match_perc)) {
                           ))
 }
 
-sig_thresh = 0.1
+sig_thresh = 0
 
 virus_omics_x = as.matrix(as.numeric(virus_target))
 colnames(virus_omics_x) = target
