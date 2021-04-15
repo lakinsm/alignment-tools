@@ -646,11 +646,11 @@ sig_thresh = 0
 
 virus_omics_x = as.matrix(as.numeric(virus_target))
 colnames(virus_omics_x) = target
-rownames(virus_omics_x) = virus[['VariantID']]
+rownames(virus_omics_x) = gsub('|', '_', virus[['VariantID']])
 
 virus_omics_y = as.matrix(sapply(virus_compare, as.numeric))
 colnames(virus_omics_y) = colnames(virus_compare)
-rownames(virus_omics_y) = virus[['VariantID']]
+rownames(virus_omics_y) = gsub('|', '_', virus[['VariantID']])
 
 virus_omics_all = cbind(virus_omics_x, virus_omics_y)
 
@@ -664,11 +664,11 @@ cat('\n\n')
 
 host_omics_x = as.matrix(as.numeric(host_target))
 colnames(host_omics_x) = target
-rownames(host_omics_x) = host[['VariantID']]
+rownames(host_omics_x) = gsub('|', '_', host[['VariantID']])
 
 host_omics_y = as.matrix(sapply(host_compare, as.numeric))
 colnames(host_omics_y) = colnames(host_compare)
-rownames(host_omics_y) = host[['VariantID']]
+rownames(host_omics_y) = gsub('|', '_', host[['VariantID']])
 host_omics_y = data.frame(apply(host_omics_y, 2, function(x) as.numeric(as.character(x))))
 
 host_omics_all = cbind(host_omics_x, host_omics_y)
