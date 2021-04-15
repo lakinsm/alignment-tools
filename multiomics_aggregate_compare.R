@@ -593,7 +593,6 @@ fingerprint_res = data.table(
   sample=character(),
   data_type=character(),
   analysis=character(),
-  top_match=character(),
   value=numeric()
 )
 
@@ -604,7 +603,7 @@ virus_target = virus[[`target`]]
 virus_match_perc = c()
 virus_mismatch_perc = c()
 for(i in 1:ncol(virus_compare)) {
-  virus_match_perc[i] = 100 * sum(virus_target == virus_compare[, ..i]) / nrow(virus)
+  virus_match_perc[i] = 100 * sum(virus_target == virus_compare[[colnames(virus_compare)[i]]]) / nrow(virus)
   virus_mismatch_perc[i] = 100 - virus_match_perc[i]
 }
 
@@ -614,8 +613,7 @@ for(i in 1:length(virus_match_perc)) {
                             sample=colnames(virus_compare)[i],
                             data_type='Virus',
                             analysis='% Concordance',
-                            top_match=colnames(virus_compare)[which.max(virus_match_perc)],
-                            value=max(virus_match_perc)
+                            value=host_match_perc[i]
                           ))
 }
 
@@ -628,7 +626,7 @@ host_target = host[[`target`]]
 host_match_perc = c()
 host_mismatch_perc = c()
 for(i in 1:ncol(host_compare)) {
-  host_match_perc[i] = 100 * sum(host_target == host_compare[, ..i]) / nrow(host)
+  host_match_perc[i] = 100 * sum(host_target == host_compare[[colnames(host_compare)[i]]]) / nrow(host)
   host_mismatch_perc[i] = 100 - host_match_perc[i]
 }
 
@@ -638,8 +636,7 @@ for(i in 1:length(host_match_perc)) {
                             sample=colnames(host_compare)[i],
                             data_type='Host',
                             analysis='% Concordance',
-                            top_match=colnames(host_compare)[which.max(host_match_perc)],
-                            value=max(host_match_perc)
+                            value=host_match_perc[i]
                           ))
 }
 
@@ -657,16 +654,13 @@ rownames(virus_omics_y) = virus[['VariantID']]
 
 virus_omics_all = cbind(virus_omics_x, virus_omics_y)
 
-print(apply(virus_omics_all, 2, class))
+print(virus_omics_all)
 
 virus_omics_res = alleleSharing(virus_omics_all, alpha=sig_thresh)
 print(virus_omics_res)
 
 cat('\n\n')
 
-print(host)
-print(host[['VariantID']][duplicated(host[['VariantID']])])
-print(apply(host, 2, class))
 
 host_omics_x = as.matrix(as.numeric(host_target))
 colnames(host_omics_x) = target
@@ -679,7 +673,7 @@ host_omics_y = data.frame(apply(host_omics_y, 2, function(x) as.numeric(as.chara
 
 host_omics_all = cbind(host_omics_x, host_omics_y)
 
-print(apply(host_omics_all, 2, class))
+print(host_omics_all)
 
 host_omics_res = alleleSharing(host_omics_all, alpha=sig_thresh)
 print(host_omics_res)
