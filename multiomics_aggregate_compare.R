@@ -710,7 +710,7 @@ for(i in 1:ncol(host_compare)) {
 cat('\n\n')
 print(fingerprint_res)
 
-write.csv(fingerprint_res, file=file.path(output_dir, 'reports', 'fingerprinting_results.csv', row.names=F))
+write.csv(fingerprint_res, file=file.path(output_dir, 'reports', 'fingerprinting_results.csv'), row.names=F)
 
 
 ### Aggregate all data and pivot
@@ -773,7 +773,7 @@ all_res = rbind(all_res,
 
 all_res_pivot = dcast(all_res, data_type + analysis ~ sample, value.var='value')
 
-write.csv(all_res_pivot, file=file.path(output_dir, 'reports', 'all_results_pivot.csv'))
+write.csv(all_res_pivot, file=file.path(output_dir, 'reports', 'all_results_pivot.csv'), row.names=F)
 
 
 
