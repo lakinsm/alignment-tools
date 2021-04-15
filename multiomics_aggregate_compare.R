@@ -771,7 +771,10 @@ all_res = rbind(all_res,
                   value=kspecies_mlprobs
                 ))
 
+all_res[['sample']] = gsub('_.+', '', all_res[['sample']], perl=T)
+
 all_res_pivot = dcast(all_res, data_type + analysis ~ sample, value.var='value')
+all_res_pivot = all_res_pivot[c(10, 11, 1, 2, 4, 8, 3, 7, 5, 6, 9)]
 
 write.csv(all_res_pivot, file=file.path(output_dir, 'reports', 'all_results_pivot.csv'), row.names=F)
 
