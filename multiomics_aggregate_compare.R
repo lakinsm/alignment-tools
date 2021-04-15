@@ -613,7 +613,7 @@ for(i in 1:length(virus_match_perc)) {
                             sample=colnames(virus_compare)[i],
                             data_type='Virus',
                             analysis='% Concordance',
-                            value=host_match_perc[i]
+                            value=virus_match_perc[i]
                           ))
 }
 
