@@ -645,6 +645,9 @@ for(i in 1:length(host_match_perc)) {
 
 sig_thresh = 0.1
 
+print(virus)
+print(virus[['VariantID']][duplicated(virus[['VariantID']])])
+
 virus_omics_x = data.frame(virus_target)
 colnames(virus_omics_x) = target
 rownames(virus_omics_x) = virus[['VariantID']]
