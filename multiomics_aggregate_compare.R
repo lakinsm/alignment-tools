@@ -645,7 +645,6 @@ for(i in 1:length(host_match_perc)) {
                           ))
 }
 
-print(fingerprint_res)
 
 sig_thresh = 0
 
@@ -664,6 +663,18 @@ print(virus_omics_res)
 virus_omics_rel = inferRelations(virus_omics_res, plot.it=FALSE)
 print(virus_omics_rel)
 cat('\n\n')
+
+for(i in 1:ncol(virus_compare)) {
+  comp_samp = colnames(virus_compare)[i]
+  row_idx = which(virus_omics_res$colnames.y == target & virus_omics_res$colnames.x == comp_samp)
+  fingerprint_res = rbind(fingerprint_res,
+                          data.table(
+                            sample=comp_samp,
+                            data_type='Virus',
+                            analysis='IBS Genotyping',
+                            value=virus_omics_res[row_idx, 1]
+                          ))
+}
 
 
 host_omics_x = as.matrix(as.numeric(host_target))
@@ -684,3 +695,17 @@ print(host_omics_rel)
 
 
 
+for(i in 1:ncol(host_compare)) {
+  comp_samp = colnames(host_compare)[i]
+  row_idx = which(host_omics_res$colnames.y == target & host_omics_res$colnames.x == comp_samp)
+  fingerprint_res = rbind(fingerprint_res,
+                          data.table(
+                            sample=comp_samp,
+                            data_type='Host',
+                            analysis='IBS Genotyping',
+                            value=host_omics_res[row_idx, 1]
+                          ))
+}
+
+cat('\n\n')
+print(fingerprint_res)
