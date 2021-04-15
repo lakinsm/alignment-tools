@@ -30,7 +30,7 @@ def load_vcf_tab(infile, target):
 					compare_var_present = True
 			if not (compare_var_present and target_var_present):
 				continue
-			for var in enumerate(obs_vars):
+			for var in obs_vars:
 				uniq_vars.setdefault(var, len(uniq_vars) + 1)
 			sys.stdout.write('{},{}\n'.format(
 				var_id,
