@@ -628,7 +628,7 @@ host_target = host[[`target`]]
 host_match_perc = c()
 host_mismatch_perc = c()
 for(i in 1:ncol(host_compare)) {
-  host_match_perc[i] = 100 * sum(host_target == host_compare[, i]) / nrow(host)
+  host_match_perc[i] = 100 * sum(host_target == host_compare[, ..i]) / nrow(host)
   host_mismatch_perc[i] = 100 - host_match_perc[i]
 }
 
