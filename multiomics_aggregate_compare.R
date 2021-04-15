@@ -709,3 +709,71 @@ for(i in 1:ncol(host_compare)) {
 
 cat('\n\n')
 print(fingerprint_res)
+
+write.csv(fingerprint_res, file=file.path(output_dir, 'reports', 'fingerprinting_results.csv', row.names=F))
+
+
+### Aggregate all data and pivot
+all_res = copy(fingerprint_res)
+all_res = rbind(all_res,
+                data.table(
+                  sample=colnames(kdomain_simplex),
+                  data_type=rep(paste('Microbiome', '-', 'Domain', sep=' '), ncol(kdomain_simplex)),
+                  analysis='Multinomial Likelihood',
+                  value=kdomain_mlprobs
+                ))
+
+all_res = rbind(all_res,
+                data.table(
+                  sample=colnames(kphylum_simplex),
+                  data_type=rep(paste('Microbiome', '-', 'Phylum', sep=' '), ncol(kphylum_simplex)),
+                  analysis='Multinomial Likelihood',
+                  value=kphylum_mlprobs
+                ))
+
+all_res = rbind(all_res,
+                data.table(
+                  sample=colnames(kclass_simplex),
+                  data_type=rep(paste('Microbiome', '-', 'Class', sep=' '), ncol(kclass_simplex)),
+                  analysis='Multinomial Likelihood',
+                  value=kclass_mlprobs
+                ))
+
+all_res = rbind(all_res,
+                data.table(
+                  sample=colnames(korder_simplex),
+                  data_type=rep(paste('Microbiome', '-', 'Order', sep=' '), ncol(korder_simplex)),
+                  analysis='Multinomial Likelihood',
+                  value=korder_mlprobs
+                ))
+
+all_res = rbind(all_res,
+                data.table(
+                  sample=colnames(kfamily_simplex),
+                  data_type=rep(paste('Microbiome', '-', 'Family', sep=' '), ncol(kfamily_simplex)),
+                  analysis='Multinomial Likelihood',
+                  value=kfamily_mlprobs
+                ))
+
+all_res = rbind(all_res,
+                data.table(
+                  sample=colnames(kgenus_simplex),
+                  data_type=rep(paste('Microbiome', '-', 'Genus', sep=' '), ncol(kgenus_simplex)),
+                  analysis='Multinomial Likelihood',
+                  value=kgenus_mlprobs
+                ))
+
+all_res = rbind(all_res,
+                data.table(
+                  sample=colnames(kspecies_simplex),
+                  data_type=rep(paste('Microbiome', '-', 'Species', sep=' '), ncol(kspecies_simplex)),
+                  analysis='Multinomial Likelihood',
+                  value=kspecies_mlprobs
+                ))
+
+all_res_pivot = dcast(all_res, data_type + analysis ~ sample, value.var='value')
+
+write.csv(all_res_pivot, file=file.path(output_dir, 'reports', 'all_results_pivot.csv'))
+
+
+
