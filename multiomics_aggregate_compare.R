@@ -659,8 +659,6 @@ rownames(virus_omics_y) = virus[['VariantID']]
 
 virus_omics_all = cbind(virus_omics_x, virus_omics_y)
 
-print(virus_omics_all)
-
 virus_omics_res = alleleSharing(virus_omics_all, alpha=sig_thresh)
 print(virus_omics_res)
 
@@ -677,8 +675,6 @@ rownames(host_omics_y) = host[['VariantID']]
 host_omics_y = data.frame(apply(host_omics_y, 2, function(x) as.numeric(as.character(x))))
 
 host_omics_all = cbind(host_omics_x, host_omics_y)
-
-print(host_omics_all)
 
 host_omics_res = alleleSharing(host_omics_all, alpha=sig_thresh)
 print(host_omics_res)
