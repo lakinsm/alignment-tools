@@ -16,7 +16,7 @@ def load_vcf_tab(infile, target):
 		target_idx = samplenames.index(target)
 		for line in data[1:]:
 			entries = line.split()
-			var_id = '|'.join(entries[0:4])
+			var_id = '|'.join(entries[0:4]).replace(',', '_')
 			obs_vars = []
 			uniq_vars = {}
 			compare_var_present = False

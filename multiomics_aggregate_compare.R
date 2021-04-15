@@ -589,10 +589,10 @@ write.csv(mlc_results, file=file.path(output_dir, 'reports', 'multinomial_likeli
 virus = data.table(read.csv(viral_var_fpath, stringsAsFactors = FALSE, header=TRUE))
 host = data.table(read.csv(host_var_fpath, stringsAsFactors = FALSE, header=TRUE))
 
-virus[['VariantID']] = gsub('\\|', '_', virus[['VariantID']])
-virus[['VariantID']] = gsub('/', '_', virus[['VariantID']])
-host[['VariantID']] = gsub('\\|', '_', host[['VariantID']])
-host[['VariantID']] = gsub('/', '_', host[['VariantID']])
+# virus[['VariantID']] = gsub('\\|', '_', virus[['VariantID']])
+# virus[['VariantID']] = gsub('/', '_', virus[['VariantID']])
+# host[['VariantID']] = gsub('\\|', '_', host[['VariantID']])
+# host[['VariantID']] = gsub('/', '_', host[['VariantID']])
 
 fingerprint_res = data.table(
   sample=character(),
