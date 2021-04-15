@@ -34,7 +34,7 @@ def load_vcf_tab(infile, target):
 				uniq_vars.setdefault(var, len(uniq_vars) + 1)
 			sys.stdout.write('{},{}\n'.format(
 				var_id,
-				','.join([uniq_vars[i] for i in obs_vars])
+				','.join([str(uniq_vars[i]) for i in obs_vars])
 			))
 
 
