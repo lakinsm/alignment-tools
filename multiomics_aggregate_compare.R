@@ -589,6 +589,11 @@ write.csv(mlc_results, file=file.path(output_dir, 'reports', 'multinomial_likeli
 virus = data.table(read.csv(viral_var_fpath, stringsAsFactors = FALSE, header=TRUE))
 host = data.table(read.csv(host_var_fpath, stringsAsFactors = FALSE, header=TRUE))
 
+virus[['VariantID']] = gsub('\\|', '_', virus[['VariantID']])
+virus[['VariantID']] = gsub('/', '_', virus[['VariantID']])
+host[['VariantID']] = gsub('\\|', '_', host[['VariantID']])
+host[['VariantID']] = gsub('/', '_', host[['VariantID']])
+
 fingerprint_res = data.table(
   sample=character(),
   data_type=character(),
@@ -646,11 +651,11 @@ sig_thresh = 0
 
 virus_omics_x = as.matrix(as.numeric(virus_target))
 colnames(virus_omics_x) = target
-rownames(virus_omics_x) = gsub('|', '_', virus[['VariantID']])
+rownames(virus_omics_x) = virus[['VariantID']]
 
 virus_omics_y = as.matrix(sapply(virus_compare, as.numeric))
 colnames(virus_omics_y) = colnames(virus_compare)
-rownames(virus_omics_y) = gsub('|', '_', virus[['VariantID']])
+rownames(virus_omics_y) = virus[['VariantID']]
 
 virus_omics_all = cbind(virus_omics_x, virus_omics_y)
 
@@ -664,11 +669,11 @@ cat('\n\n')
 
 host_omics_x = as.matrix(as.numeric(host_target))
 colnames(host_omics_x) = target
-rownames(host_omics_x) = gsub('|', '_', host[['VariantID']])
+rownames(host_omics_x) = host[['VariantID']]
 
 host_omics_y = as.matrix(sapply(host_compare, as.numeric))
 colnames(host_omics_y) = colnames(host_compare)
-rownames(host_omics_y) = gsub('|', '_', host[['VariantID']])
+rownames(host_omics_y) = host[['VariantID']]
 host_omics_y = data.frame(apply(host_omics_y, 2, function(x) as.numeric(as.character(x))))
 
 host_omics_all = cbind(host_omics_x, host_omics_y)
