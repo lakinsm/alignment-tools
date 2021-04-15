@@ -14,6 +14,7 @@ def load_vcf_tab(infile, target):
 			','.join(samplenames)
 		))
 		target_idx = samplenames.index(target)
+		print(target_idx, samplenames)
 		assert target_idx
 		for line in data[1:]:
 			entries = line.split()
