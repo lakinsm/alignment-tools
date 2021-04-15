@@ -17,24 +17,22 @@ def load_vcf_tab(infile, target):
 		for line in data[1:]:
 			entries = line.split()
 			var_id = '|'.join(entries[0:4]).replace(',', '_')
-			obs_vars = []
-			uniq_vars = {}
+			obs_var = entries[3].split(',')[0]
 			compare_var_present = False
 			target_var_present = False
+			obs_gts = []
 			for i in range((len(entries) - 4) // 3):
 				this_idx = 4 + (i * 3)
-				obs_vars.append(entries[this_idx])
 				if i == target_idx and entries[this_idx] != '.':
 					target_var_present = True
 				elif i != target_idx and entries[this_idx] != '.':
 					compare_var_present = True
+				obs_gts.append(entries[this_idx].count(obs_var))
 			if not (compare_var_present and target_var_present):
 				continue
-			for var in obs_vars:
-				uniq_vars.setdefault(var, len(uniq_vars) + 1)
 			sys.stdout.write('{},{}\n'.format(
 				var_id,
-				','.join([str(uniq_vars[i]) for i in obs_vars])
+				','.join([str(x+1) for x in obs_gts])
 			))
 
 
