@@ -17,6 +17,7 @@ def load_vcf_tab(infile, target):
 		for line in data[1:]:
 			entries = line.split()
 			var_id = '|'.join(entries[0:4]).replace(',', '_')
+			print(entries)
 			if ',' in entries[3]:
 				obs_var = entries[3].split(',')[0]
 			else:
