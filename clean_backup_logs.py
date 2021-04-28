@@ -37,6 +37,7 @@ def check_delete(infile_path):
 				this_delete_status = False
 	if this_delete_status:
 		print('DELETE\t\t{}'.format(infile_path))
+		os.remove(infile_path)
 
 
 def clean_backup_logs(log_dir, summary_file_path):
@@ -74,6 +75,7 @@ def clean_backup_logs(log_dir, summary_file_path):
 						sample_status[samplename] = True
 			if this_delete_status:
 				print('DELETE\t{}'.format(log_file))
+				os.remove(log_file)
 			for samplename, status in sample_status.items():
 				output_code = 'NO_CHANGE'
 				if status:
