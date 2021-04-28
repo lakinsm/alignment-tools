@@ -75,11 +75,11 @@ kdomain_simplex = copy(kdomain)
 kdomain_simplex[, Domain := NULL]
 kdomain_simplex[, eval(target) := NULL]
 kdomain_simplex = as.matrix(kdomain_simplex)
-kdomain_col_counts = colSums(kdomain_simplex)
+# kdomain_col_counts = colSums(kdomain_simplex)
 kdomain_simplex = apply(kdomain_simplex, 2, function(x) (x+eps) / sum(x+eps))
 kdomain_nb_max = rep(0L, ncol(kdomain_simplex))
 for(i in 1:ncol(kdomain_simplex)) {
-  kdomain_nb_max[i] = kdomain_col_counts[i] * (matrix(kdomain_simplex[, i], nrow=1) %*% log(matrix(kdomain_simplex[, i], ncol=1)))
+  kdomain_nb_max[i] = sum(kdomain_target) * (matrix(kdomain_simplex[, i], nrow=1) %*% log(matrix(kdomain_simplex[, i], ncol=1)))
 }
 kdomain_nb = kdomain_target %*% log(kdomain_simplex)
 
