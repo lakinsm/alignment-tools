@@ -49,7 +49,7 @@ def clean_backup_logs(log_dir, summary_file_path):
 		if summary_file_present:
 			for timestamp, status, samplename in summary_data:
 				sout.write('{}\t{}\t{}\n'.format(timestamp, status, samplename))
-		for log_file in glob.glob(log_dir + '/*.log'):
+		for log_file in sorted(glob.glob(log_dir + '/*.log')):
 			if os.stat(log_file).st_size == 0:
 				continue
 			timestamp = log_file.split('/')[-1].split('_')[0]
