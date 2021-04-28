@@ -58,6 +58,7 @@ def clean_backup_logs(log_dir, summary_file_path):
 					continue
 				if timestamp in seen:
 					check_delete(log_file)
+					continue
 			this_delete_status = True
 			sample_status = {}
 			with open(log_file, 'r') as f:
