@@ -36,7 +36,7 @@ def check_delete(infile_path):
 			if status == 'UPDATED':
 				this_delete_status = False
 	if this_delete_status:
-		True
+		print('DELETE\t\t{}'.format(infile_path))
 
 
 def clean_backup_logs(log_dir, summary_file_path):
@@ -45,10 +45,10 @@ def clean_backup_logs(log_dir, summary_file_path):
 		summary_file_present = True
 		seen, keep, summary_data = load_summary_file(summary_file_path)
 	with open(summary_file_path, 'w') as sout:
-		sout.write('Timestamp,Status,Samplename\n')
+		sout.write('Timestamp\tStatus\tSamplename\n')
 		if summary_file_present:
 			for timestamp, status, samplename in summary_data:
-				sout.write('{},{},{}\n'.format(timestamp, status, samplename))
+				sout.write('{}\t{}\t{}\n'.format(timestamp, status, samplename))
 		for log_file in glob.glob(log_dir + '/*.log'):
 			if os.stat(log_file).st_size == 0:
 				continue
@@ -66,22 +66,21 @@ def clean_backup_logs(log_dir, summary_file_path):
 					if not line:
 						continue
 					_, _, samplename, _, status, _, _ = line.split()
-					print(samplename, status)
 					if samplename not in sample_status:
 						sample_status[samplename] = False
 					if status == 'UPDATED':
 						this_delete_status = False
 						sample_status[samplename] = True
 			if this_delete_status:
-				True
+				print('DELETE\t{}'.format(log_file))
 			for samplename, status in sample_status.items():
 				output_code = 'NO_CHANGE'
 				if status:
 					output_code = 'UPDATED'
-				sout.write('{},{},{}\n'.format(
+				sout.write('{}\t{}\t{}\n'.format(
 					timestamp,
-					samplename,
-					output_code
+					output_code,
+					samplename
 				))
 
 
