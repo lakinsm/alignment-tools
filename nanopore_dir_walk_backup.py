@@ -192,6 +192,8 @@ def check_file_match(root_source, root_dest, fq_pass, write_text_log=None, non_i
 		# Metadata files
 		flowcell_dir = '/'.join(fq_path.rstrip('/').split('/')[:-1])
 		ont_metadata_files = find_ont_metadata(flowcell_dir)
+		print(ont_metadata_files)
+		sys.exit()
 		for f in ont_metadata_files:
 			fstatus = 'UPDATED'
 			dest_path = '{}/{}'.format(root_dest.rstrip('/'), f.split(root_source)[-1].lstrip('/'))
@@ -228,7 +230,6 @@ def check_file_match(root_source, root_dest, fq_pass, write_text_log=None, non_i
 					f,
 					dest_path
 				))
-		sys.exit()
 
 		# FASTQ files
 		for this_root, _, filenames in os.walk(fq_path):
