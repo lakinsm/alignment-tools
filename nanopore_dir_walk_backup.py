@@ -56,6 +56,24 @@ def find_fastq_pass(root_dir):
 	return fq_pass
 
 
+def find_ont_metadata(flowcell_dir):
+	"""
+	Take as input an absolute path flowcell directory for Nanopore instrument data and output all paths to ONT metadata
+	files within that root directory.
+	:param flowcell_dir: STR, absolute directory path to flowcell-level root directory
+	:return: tuple of absolute paths to all fastq_pass directories in root_dir
+	"""
+	ont_files = tuple()
+	for root, dirs, files in os.walk(flowcell_dir + '/', topdown=True):
+		dirs[:] = [d for d in dirs if os_walk_condition(flowcell_dir, os.path.join(root, d))]
+		for f in files:
+			if fnmatch.fnmatch(f, '*.csv') or fnmatch.fnmatch(f, '*.tsv') or fnmatch.fnmatch(f, '*.txt') or \
+				fnmatch.fnmatch(f, '*.md') or fnmatch.fnmatch(f, '*.pdf'):
+				print(f)
+				# ont_files += (os.path.join(root, d, f),)
+	return ont_files
+
+
 def find_ont_sample_flowcell(fpath):
 	"""
 	Return the samplename and flowcell name as specified by the input directory path.  This uses regular expressions
@@ -174,7 +192,8 @@ def check_file_match(root_source, root_dest, fq_pass, write_text_log=None, non_i
 
 		# Metadata files
 		flowcell_dir = '/'.join(fq_path.rstrip('/').split('/')[:-1])
-		for f in glob.glob(flowcell_dir + '/*{}*'.format(flowcell_id)):
+		ont_metadata_files = find_ont_metadata(flowcell_dir)
+		for f in ont_metadata_files:
 			fstatus = 'UPDATED'
 			dest_path = '{}/{}'.format(root_dest.rstrip('/'), f.split(root_source)[-1].lstrip('/'))
 
@@ -210,6 +229,7 @@ def check_file_match(root_source, root_dest, fq_pass, write_text_log=None, non_i
 					f,
 					dest_path
 				))
+		sys.exit()
 
 		# FASTQ files
 		for this_root, _, filenames in os.walk(fq_path):

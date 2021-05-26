@@ -97,12 +97,11 @@ class SamParser(object):
 			self.output_handle.close()
 
 
-def parse_cigar(s, t_idx, rev):
+def parse_cigar(s, t_idx):
 	"""
 	Parse SAM CIGAR alignment string and return indices to which the read aligned.
 	:param s: STR, CIGAR string
 	:param t_idx: INT, zero-based index for target start position
-	:param rev: BOOL, read aligned in reverse orientation if true
 	:return: tuple of integers, zero-indexed indices to which the read aligned
 	"""
 	ret = ()
@@ -113,28 +112,16 @@ def parse_cigar(s, t_idx, rev):
 			num += s[c_idx]
 		else:
 			op = s[c_idx]
-			if rev:
-				if op == 'M' or op == '=':
-					ret += tuple(range(t_idx - int(num) + 1, t_idx + 1))
-					t_idx -= int(num)
-				elif op == 'D':
-					t_idx -= int(num)
-				elif op == 'N':
-					t_idx -= int(num)
-				elif op == 'X':
-					ret += tuple(range(t_idx - int(num) + 1, t_idx + 1))
-					t_idx -= int(num)
-			else:
-				if op == 'M' or op == '=':
-					ret += tuple(range(t_idx, t_idx + int(num)))
-					t_idx += int(num)
-				elif op == 'D':
-					t_idx += int(num)
-				elif op == 'N':
-					t_idx += int(num)
-				elif op == 'X':
-					ret += tuple(range(t_idx, t_idx + int(num)))
-					t_idx += int(num)
+			if op == 'M' or op == '=':
+				ret += tuple(range(t_idx, t_idx + int(num)))
+				t_idx += int(num)
+			elif op == 'D':
+				t_idx += int(num)
+			elif op == 'N':
+				t_idx += int(num)
+			elif op == 'X':
+				ret += tuple(range(t_idx, t_idx + int(num)))
+				t_idx += int(num)
 			num = ''
 		c_idx += 1
 	return ret
@@ -247,8 +234,8 @@ def write_coverage(cov_dict, ref_len_dict, output_csv_path):
 def worker(infile):
 	ref_cov = {}
 	sam_parser = SamParser(infile)
-	for query, q_reverse, target, t_start, cigar in sam_parser:
-		idxs = parse_cigar(cigar, t_start - 1, q_reverse)
+	for query, _, target, t_start, cigar in sam_parser:
+		idxs = parse_cigar(cigar, t_start - 1)
 		if target not in ref_cov:
 			ref_cov[target] = {}
 		for i in idxs:

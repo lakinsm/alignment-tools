@@ -2,7 +2,6 @@
 
 import sys
 import numpy as np
-import queue
 from queue import PriorityQueue
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
