@@ -65,13 +65,11 @@ def find_ont_metadata(flowcell_dir):
 	"""
 	ont_files = tuple()
 	for root, dirs, files in os.walk(flowcell_dir + '/', topdown=True):
-		print(root, dirs, files)
 		dirs[:] = [d for d in dirs if os_walk_condition(flowcell_dir, os.path.join(root, d))]
 		for f in files:
 			if fnmatch.fnmatch(f, '*.csv') or fnmatch.fnmatch(f, '*.tsv') or fnmatch.fnmatch(f, '*.txt') or \
 				fnmatch.fnmatch(f, '*.md') or fnmatch.fnmatch(f, '*.pdf'):
-				x = 1
-				# ont_files += (os.path.join(root, d, f),)
+				ont_files += (os.path.join(root, f),)
 	return ont_files
 
 
